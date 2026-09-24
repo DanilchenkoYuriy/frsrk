@@ -37,7 +37,7 @@ export default async function CalendarPage() {
 
   return (
     <>
-      <PageHead slogan={SLOGANS.calendar} title="Календарь мероприятий" lead="Соревнования, семинары и сборы федерации. Откройте мероприятие, чтобы найти положение, регистрацию и протоколы." crumbs={[{ label: "Календарь" }]} />
+      <PageHead banner="calendar" slogan={SLOGANS.calendar} title="Календарь мероприятий" lead="Соревнования, семинары и сборы федерации. Откройте мероприятие, чтобы найти положение, регистрацию и протоколы." crumbs={[{ label: "Календарь" }]} />
       <div className="page">
         <div className="container">
           {views.length ? <CalendarExplorer events={views} today={today} /> : <p className="empty">Мероприятий пока нет.</p>}

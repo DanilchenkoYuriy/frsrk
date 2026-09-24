@@ -14,7 +14,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
   const [{ topic }, s] = await Promise.all([searchParams, getSettings()]);
   return (
     <>
-      <PageHead slogan={SLOGANS.contacts} title="Контакты" lead="Напишите нам или позвоните. Отвечаем на вопросы о занятиях, соревнованиях, судействе и открытии секций." crumbs={[{ label: "Контакты" }]} />
+      <PageHead banner="contacts" slogan={SLOGANS.contacts} title="Контакты" lead="Напишите нам или позвоните. Отвечаем на вопросы о занятиях, соревнованиях, судействе и открытии секций." crumbs={[{ label: "Контакты" }]} />
       <div className="page">
         <div className="container layout-2">
           <div>

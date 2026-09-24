@@ -84,7 +84,7 @@ export default async function MediaPage() {
 
   return (
     <>
-      <PageHead slogan={SLOGANS.media} title="Медиа" lead={page?.lead ?? "Фотографии и видео с мероприятий федерации."} crumbs={[{ label: "Медиа" }]} />
+      <PageHead banner="media" slogan={SLOGANS.media} title="Медиа" lead={page?.lead ?? "Фотографии и видео с мероприятий федерации."} crumbs={[{ label: "Медиа" }]} />
       <div className="page">
         <div className="container">
           <RichText data={page?.body} />

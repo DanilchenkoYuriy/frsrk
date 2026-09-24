@@ -29,7 +29,7 @@ export default async function NewsItemPage({ params }: Props) {
 
   return (
     <>
-      <PageHead slogan={SLOGANS.news} title={item.title} lead={formatDate(item.publishedAt)} crumbs={[{ label: "Новости", href: "/news" }, { label: item.title }]} />
+      <PageHead banner="news" slogan={SLOGANS.news} title={item.title} lead={formatDate(item.publishedAt)} crumbs={[{ label: "Новости", href: "/news" }, { label: item.title }]} />
       <div className="page">
         <div className="container" style={{ display: "grid", gap: 40 }}>
           {populated<Media>(item.cover) ? (

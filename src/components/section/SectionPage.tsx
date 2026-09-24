@@ -23,7 +23,7 @@ export async function SectionPage({ section, href, title, lead, slogan, children
   ];
   return (
     <>
-      <PageHead title={title} lead={lead} crumbs={crumbs} slogan={slogan} />
+      <PageHead banner={section} title={title} lead={lead} crumbs={crumbs} slogan={slogan} />
       <div className="page">
         <div className="container">
           <SectionShell title={config.title} items={config.items.map((i) => ({ ...i, active: i.href === href }))}>

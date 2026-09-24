@@ -1080,6 +1080,16 @@ export interface SiteSetting {
   description?: string | null;
   heroImage?: (number | null) | Media;
   ogImage?: (number | null) | Media;
+  banners?: {
+    calendar?: (number | null) | Media;
+    documents?: (number | null) | Media;
+    news?: (number | null) | Media;
+    media?: (number | null) | Media;
+    sections?: (number | null) | Media;
+    contacts?: (number | null) | Media;
+    participants?: (number | null) | Media;
+    about?: (number | null) | Media;
+  };
   phone?: string | null;
   email?: string | null;
   address?: string | null;
@@ -1112,6 +1122,18 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   description?: T;
   heroImage?: T;
   ogImage?: T;
+  banners?:
+    | T
+    | {
+        calendar?: T;
+        documents?: T;
+        news?: T;
+        media?: T;
+        sections?: T;
+        contacts?: T;
+        participants?: T;
+        about?: T;
+      };
   phone?: T;
   email?: T;
   address?: T;

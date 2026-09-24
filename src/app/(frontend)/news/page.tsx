@@ -16,7 +16,7 @@ export default async function NewsPage() {
   const news = await getNews(100);
   return (
     <>
-      <PageHead slogan={SLOGANS.news} title="Новости" lead="Сообщения федерации: соревнования, итоги, обучение." crumbs={[{ label: "Новости" }]} />
+      <PageHead banner="news" slogan={SLOGANS.news} title="Новости" lead="Сообщения федерации: соревнования, итоги, обучение." crumbs={[{ label: "Новости" }]} />
       <div className="page">
         <div className="container">
           {news.length === 0 ? (

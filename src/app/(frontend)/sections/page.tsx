@@ -52,7 +52,7 @@ export default async function SectionsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHead slogan={SLOGANS.sections} title="Найти секцию" lead="Выберите муниципальное образование на карте или найдите секцию через поиск. В карточке есть телефон тренера и маршрут." crumbs={[{ label: "Найти секцию" }]} />
+      <PageHead banner="sections" slogan={SLOGANS.sections} title="Найти секцию" lead="Выберите муниципальное образование на карте или найдите секцию через поиск. В карточке есть телефон тренера и маршрут." crumbs={[{ label: "Найти секцию" }]} />
       <div className="page">
         <div className="container">
           <SectionsFinder municipalities={items} sections={views} initialCity={city ?? null} />

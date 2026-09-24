@@ -32,7 +32,7 @@ export async function DocumentsPage({ active, title, lead, slogan, crumbLabel, q
 
   return (
     <>
-      <PageHead title={title} lead={lead} slogan={slogan} crumbs={[{ label: "Документы", href: "/documents" }, ...(crumbLabel ? [{ label: crumbLabel }] : [])]} />
+      <PageHead banner="documents" title={title} lead={lead} slogan={slogan} crumbs={[{ label: "Документы", href: "/documents" }, ...(crumbLabel ? [{ label: crumbLabel }] : [])]} />
       <div className="page">
         <div className="container">
           <SectionShell

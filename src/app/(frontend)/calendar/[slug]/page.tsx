@@ -36,7 +36,7 @@ export default async function EventPage({ params }: Props) {
 
   return (
     <>
-      <PageHead slogan={SLOGANS.event} title={event.title} lead={formatRange(event.dateFrom, event.dateTo)} crumbs={[{ label: "Календарь", href: "/calendar" }, { label: event.title }]} />
+      <PageHead banner="calendar" slogan={SLOGANS.event} title={event.title} lead={formatRange(event.dateFrom, event.dateTo)} crumbs={[{ label: "Календарь", href: "/calendar" }, { label: event.title }]} />
       <div className="page">
         <div className="container layout-2">
           <div>

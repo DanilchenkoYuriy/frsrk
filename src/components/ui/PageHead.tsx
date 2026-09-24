@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getSettings, populated, type Media } from "@/lib/cms";
+import { getSettings, populated, type Media, type SiteSetting } from "@/lib/cms";
 import { Picture } from "@/components/ui/Picture";
 
 interface Crumb {
@@ -12,15 +12,17 @@ interface Props {
   title: string;
   lead?: string | null;
   crumbs?: Crumb[];
+  /** Раздел, чья картинка полосы берётся из «Данные федерации → Полосы заголовков» */
+  banner?: keyof NonNullable<SiteSetting["banners"]>;
   /** Рукописная надпись справа (только на компьютере) */
   slogan?: string;
   children?: ReactNode;
 }
 
 /** Заголовок внутренней страницы: тёмная полоса с фото главной страницы. */
-export async function PageHead({ title, lead, crumbs = [], slogan, children }: Props) {
+export async function PageHead({ title, lead, crumbs = [], slogan, banner, children }: Props) {
   const settings = await getSettings();
-  const hero = populated<Media>(settings.heroImage);
+  const hero = (banner ? populated<Media>(settings.banners?.[banner]) : null) ?? populated<Media>(settings.heroImage);
   return (
     <header className="banner">
       {hero ? (

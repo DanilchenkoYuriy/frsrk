@@ -20,7 +20,7 @@ export default async function GalleryPage({ params }: Props) {
   if (!g) notFound();
   return (
     <>
-      <PageHead slogan={SLOGANS.media} title={g.title} lead={g.description ?? formatDate(g.date)} crumbs={[{ label: "Медиа", href: "/media" }, { label: g.title }]} />
+      <PageHead banner="media" slogan={SLOGANS.media} title={g.title} lead={g.description ?? formatDate(g.date)} crumbs={[{ label: "Медиа", href: "/media" }, { label: g.title }]} />
       <div className="page">
         <div className="container">
           <div className="gallery" role="list">
