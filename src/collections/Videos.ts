@@ -29,5 +29,6 @@ export const Videos: CollectionConfig = {
     { name: "date", type: "date", label: "Дата съёмки", admin: { date: { pickerAppearance: "dayOnly", displayFormat: "dd.MM.yyyy" } } },
     { name: "description", type: "textarea", label: "Описание" },
     { name: "published", type: "checkbox", label: "Показывать на сайте", defaultValue: false, admin: { position: "sidebar" } },
+    { name: "inGallery", type: "checkbox", label: "Показывать в разделе «Медиа»", defaultValue: true, admin: { position: "sidebar", description: "Снимите, если видео нужно только для первого экрана главной." } },
   ],
 };

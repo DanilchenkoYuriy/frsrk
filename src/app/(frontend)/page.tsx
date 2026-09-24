@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAudioTracks, getDocuments, getEvents, getGalleries, getMunicipalities, getNews, getSections, getSettings, populated, type Event, type Media, type Municipality } from "@/lib/cms";
+import { getAudioTracks, getDocuments, getEvents, getGalleries, getMunicipalities, getNews, getSections, getSettings, populated, type Event, type Media, type Municipality, type Video } from "@/lib/cms";
 import { EVENT_STATUS_LABELS, eventStatus, todayIso } from "@/lib/status";
 import { EVENT_LEVELS, EVENT_TYPES, labelOf } from "@/lib/constants";
 import { dayAndMonth, formatDate, formatRange } from "@/lib/dates";
@@ -7,6 +7,7 @@ import { telHref } from "@/lib/site";
 import { Picture } from "@/components/ui/Picture";
 import { ICONS } from "@/components/ui/Icons";
 import { CrimeaMap } from "@/components/sections/CrimeaMap";
+import { HeroVideo } from "@/components/home/HeroVideo";
 
 const plural = (n: number, forms: [string, string, string]) => {
   const m10 = n % 10;
@@ -74,6 +75,7 @@ export default async function HomePage() {
 
   const photos = (galleries[0]?.photos ?? []).map((p) => populated<Media>(p.image)).filter((m): m is Media => Boolean(m?.url)).slice(0, 5);
   const hero = populated<Media>(settings.heroImage);
+  const heroVideo = settings.heroMode === "video" ? populated<Video>(settings.heroVideo) : null;
 
   const countIn = (cat: string) => documents.filter((d) => d.category === cat).length;
   const tiles = [
@@ -98,6 +100,7 @@ export default async function HomePage() {
             <Picture media={hero} alt="" sizes="100vw" priority />
           </div>
         ) : null}
+        {heroVideo?.url ? <HeroVideo src={heroVideo.url} allowMobile={Boolean(settings.heroVideoMobile)} /> : null}
         <div className="container hero__inner">
           <h1 className="hero__title" id="hero-title">
             Спортивная скакалка в Республике Крым

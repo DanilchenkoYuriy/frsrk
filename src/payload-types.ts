@@ -296,6 +296,10 @@ export interface Video {
   date?: string | null;
   description?: string | null;
   published?: boolean | null;
+  /**
+   * Снимите, если видео нужно только для первого экрана главной.
+   */
+  inGallery?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -844,6 +848,7 @@ export interface VideosSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   published?: T;
+  inGallery?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1078,7 +1083,19 @@ export interface SiteSetting {
   shortName: string;
   legalName?: string | null;
   description?: string | null;
+  /**
+   * Она же остаётся запасной, пока грузится видео, и стоит на тёмных полосах внутренних страниц.
+   */
   heroImage?: (number | null) | Media;
+  heroMode?: ('photo' | 'video') | null;
+  /**
+   * Выберите видео из раздела «Содержимое → Видео» (загруженный файл MP4, у которого включено «Показывать на сайте»). Лучше ролик 10–20 секунд, 1920×1080, до 8 МБ. Звука на сайте нет. Хотите скрыть его из раздела «Медиа», снимите у самого видео галочку «Показывать в разделе Медиа».
+   */
+  heroVideo?: (number | null) | Video;
+  /**
+   * По умолчанию на телефонах показывается фото, чтобы не тратить мобильный трафик посетителей.
+   */
+  heroVideoMobile?: boolean | null;
   ogImage?: (number | null) | Media;
   banners?: {
     calendar?: (number | null) | Media;
@@ -1121,6 +1138,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   legalName?: T;
   description?: T;
   heroImage?: T;
+  heroMode?: T;
+  heroVideo?: T;
+  heroVideoMobile?: T;
   ogImage?: T;
   banners?:
     | T

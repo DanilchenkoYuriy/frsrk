@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default async function MediaPage() {
-  const [galleries, videos, page] = await Promise.all([getGalleries(), getVideos(), getPage("media")]);
+  const [galleries, allVideos, page] = await Promise.all([getGalleries(), getVideos(), getPage("media")]);
+  const videos = allVideos.filter((v) => v.inGallery !== false);
   const empty = galleries.length === 0 && videos.length === 0;
 
   const single = galleries.length === 1 ? galleries[0] : null;
