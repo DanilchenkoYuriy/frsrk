@@ -1098,6 +1098,10 @@ export interface SiteSetting {
   heroVideoMobile?: boolean | null;
   ogImage?: (number | null) | Media;
   banners?: {
+    /**
+     * Показывается везде, где у раздела ниже нет своей картинки. Если пусто, берётся главная картинка первого экрана.
+     */
+    default?: (number | null) | Media;
     calendar?: (number | null) | Media;
     documents?: (number | null) | Media;
     news?: (number | null) | Media;
@@ -1145,6 +1149,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   banners?:
     | T
     | {
+        default?: T;
         calendar?: T;
         documents?: T;
         news?: T;

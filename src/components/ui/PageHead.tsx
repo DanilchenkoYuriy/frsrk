@@ -22,12 +22,12 @@ interface Props {
 /** Заголовок внутренней страницы: тёмная полоса с фото главной страницы. */
 export async function PageHead({ title, lead, crumbs = [], slogan, banner, children }: Props) {
   const settings = await getSettings();
-  const hero = (banner ? populated<Media>(settings.banners?.[banner]) : null) ?? populated<Media>(settings.heroImage);
+  const hero = (banner ? populated<Media>(settings.banners?.[banner]) : null) ?? populated<Media>(settings.banners?.default) ?? populated<Media>(settings.heroImage);
   return (
     <header className="banner">
       {hero ? (
         <div className="banner__media" aria-hidden="true">
-          <Picture media={hero} alt="" sizes="100vw" priority />
+          <Picture media={hero} alt="" sizes="(max-width: 760px) 900px, 100vw" priority />
         </div>
       ) : null}
       <div className="container banner__inner">

@@ -16,28 +16,28 @@ const brand = path.join(root, "public", "brand");
 
 fs.mkdirSync(path.join(out, "photos"), { recursive: true });
 
-/** Утверждённое главное фото лежит в seed-assets/source/hero.webp */
-async function heroPhoto() {
-  const file = path.join(src, "source", "hero.webp");
-  if (!fs.existsSync(file)) return console.warn("пропуск hero: нет seed-assets/source/hero.webp");
-  await sharp(file).jpeg({ quality: 88, mozjpeg: true }).toFile(path.join(out, "hero.jpg"));
-  console.log("готово hero");
-}
-
-async function photos() {
-  const dir = path.join(src, "photos-src");
-  const files = fs.readdirSync(dir).filter((f) => /\.(jpe?g|webp)$/i.test(f)).sort();
-  let i = 0;
-  for (const f of files) {
-    i += 1;
-    const target = path.join(out, "photos", `foto-${String(i).padStart(2, "0")}.jpg`);
-    await sharp(path.join(dir, f)).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 82, mozjpeg: true }).toFile(target);
+/**
+ * Главное фото первого экрана (seed-assets/source/hero-home.png) и картинка остальных страниц
+ * (seed-assets/source/inner-banner.png) переводятся в WebP: они лёгкие, сайт сам делает из них
+ * адаптивные размеры (400, 800, 1600 px).
+ */
+async function heroPhotos() {
+  for (const [source, target] of [
+    ["hero-home.png", "hero-home.webp"],
+    ["inner-banner.png", "inner-banner.webp"],
+  ]) {
+    const file = path.join(src, "source", source);
+    if (!fs.existsSync(file)) {
+      console.warn(`пропуск ${source}: файла нет`);
+      continue;
+    }
+    await sharp(file).resize({ width: 2400, withoutEnlargement: true }).webp({ quality: 84, effort: 5 }).toFile(path.join(out, target));
+    console.log("готово", target);
   }
-  console.log(`фото: ${files.length}`);
 }
 
 async function og() {
-  const hero = path.join(src, "source", "hero.webp");
+  const hero = path.join(src, "source", "hero-home.png");
   if (!fs.existsSync(hero)) return;
   const W = 1200;
   const H = 630;
@@ -45,7 +45,7 @@ async function og() {
   const logo = await sharp(path.join(brand, "frsrk-logo.png")).resize({ height: 300 }).toBuffer();
   const overlay = Buffer.from(
     `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#071426" stop-opacity="0.96"/><stop offset="0.62" stop-color="#071426" stop-opacity="0.8"/><stop offset="1" stop-color="#071426" stop-opacity="0.1"/></linearGradient></defs>
+      <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#071426" stop-opacity="0.96"/><stop offset="0.6" stop-color="#071426" stop-opacity="0.8"/><stop offset="1" stop-color="#071426" stop-opacity="0.1"/></linearGradient></defs>
       <rect width="${W}" height="${H}" fill="url(#g)"/>
       <rect y="${H - 16}" width="${W / 3}" height="16" fill="#0d5db8"/><rect x="${W / 3}" y="${H - 16}" width="${W / 3}" height="16" fill="#fff"/><rect x="${(2 * W) / 3}" y="${H - 16}" width="${W / 3}" height="16" fill="#d20f2d"/>
       <text x="80" y="230" font-family="Helvetica Neue, Arial, sans-serif" font-size="62" font-weight="700" fill="#fff">Федерация роуп</text>
@@ -76,7 +76,21 @@ async function icons() {
   console.log("готово favicon");
 }
 
-await heroPhoto();
+async function photos() {
+  const dir = path.join(src, "photos-src");
+  const files = fs.readdirSync(dir).filter((f) => /\.(jpe?g|webp)$/i.test(f)).sort();
+  let i = 0;
+  for (const f of files) {
+    i += 1;
+    const target = path.join(out, "photos", `foto-${String(i).padStart(2, "0")}.jpg`);
+    await sharp(path.join(dir, f)).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 82, mozjpeg: true }).toFile(target);
+  }
+  console.log(`фото: ${files.length}`);
+}
+
+
+
+await heroPhotos();
 await og();
 await icons();
 await photos();

@@ -22,6 +22,10 @@ export function Picture({ media, alt, sizes = "100vw", priority = false, classNa
   const candidates = [m.sizes?.card, m.sizes?.wide]
     .filter((s): s is NonNullable<typeof s> => Boolean(s?.url && s.width))
     .map((s) => ({ url: s.url as string, width: s.width as number }));
+  // Оригинал в WebP уже лёгкий, поэтому отдаём его для больших и плотных экранов
+  if (m.mimeType === "image/webp" && m.width && m.width > (candidates.at(-1)?.width ?? 0) && m.width <= 2600) {
+    candidates.push({ url: m.url, width: m.width });
+  }
 
   const srcSet = candidates.length ? candidates.map((c) => `${c.url} ${c.width}w`).join(", ") : undefined;
   const src = candidates.length ? candidates[candidates.length - 1].url : m.url;

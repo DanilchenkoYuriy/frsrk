@@ -169,21 +169,33 @@ async function main() {
   console.log("Картинки");
   const prepared = path.join(assets, "prepared");
   const media = new Map<string, number>();
-  const putImage = async (key: string, file: string, alt: string) => {
+  const putImage = async (key: string, file: string, alt: string, focal?: { x: number; y: number }) => {
     const found = await exists(p, "media", { alt: { equals: alt } });
     if (found) return void media.set(key, found.id);
     if (!fs.existsSync(file)) return void log(`нет файла ${path.basename(file)}, пропуск`);
-    const doc = await p.create({ collection: "media", data: { alt }, file: fileOf(file), overrideAccess: true });
+    const doc = await p.create({
+      collection: "media",
+      data: { alt, ...(focal ? { focalX: focal.x, focalY: focal.y } : {}) },
+      file: fileOf(file),
+      overrideAccess: true,
+    });
     media.set(key, doc.id);
     log(`+ ${alt.slice(0, 60)}`);
   };
-  await putImage("hero", path.join(prepared, "hero.jpg"), "Спортсменка со скакалкой на фоне гор и побережья Крыма");
+  // Точка фокуса нужна, чтобы на узком экране телефона обрезка оставляла спортсменов в кадре
+  await putImage("hero", path.join(prepared, "hero-home.webp"), "Спортсмены прыгают через длинную скакалку на смотровой площадке над крымским побережьем", { x: 62, y: 50 });
+  await putImage("banner", path.join(prepared, "inner-banner.webp"), "Спортсменка со скакалкой на смотровой площадке над крымским побережьем", { x: 78, y: 50 });
   await putImage("og", path.join(prepared, "og.jpg"), "Федерация роуп скиппинга Республики Крым");
 
-  // ── Настройки сайта ────────────────────────────────────────────────────
+  // ── Настройки сайта: картинки ставятся, только если в админке они ещё не выбраны ──
+  const current = await p.findGlobal({ slug: "site-settings", depth: 0, overrideAccess: true });
   await p.updateGlobal({
     slug: "site-settings",
-    data: { heroImage: media.get("hero"), ogImage: media.get("og") },
+    data: {
+      heroImage: current.heroImage ?? media.get("hero"),
+      ogImage: current.ogImage ?? media.get("og"),
+      banners: { ...(current.banners ?? {}), default: current.banners?.default ?? media.get("banner") },
+    },
     overrideAccess: true,
   });
 

@@ -97,7 +97,7 @@ export default async function HomePage() {
       <section className="hero" aria-labelledby="hero-title">
         {hero ? (
           <div className="hero__media">
-            <Picture media={hero} alt="" sizes="100vw" priority />
+            <Picture media={hero} alt="" sizes="(max-width: 760px) 1500px, 100vw" priority />
           </div>
         ) : null}
         {heroVideo?.url ? <HeroVideo src={heroVideo.url} allowMobile={Boolean(settings.heroVideoMobile)} /> : null}
