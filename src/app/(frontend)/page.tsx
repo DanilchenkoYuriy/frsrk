@@ -85,6 +85,8 @@ export default async function HomePage() {
     { href: "/documents/audio", icon: "music", title: "Музыка для соревнований", text: `${audio.length} ${plural(audio.length, ["дорожка", "дорожки", "дорожек"])}, слушать и скачать` },
   ].filter((t) => !t.href.includes("federation") || countIn("federation") > 0);
 
+  // Полоса с цифрами пока скрыта: цифры маленькие. Чтобы вернуть, поставьте true.
+  const showStats = false;
   const stats = [
     { n: sections.length, label: plural(sections.length, ["секция в Крыму", "секции в Крыму", "секций в Крыму"]), href: "/sections" },
     { n: `${republicWithSections}/${republic.length || 25}`, label: "муниципальных образований Крыма с секциями", href: "/sections" },
@@ -117,18 +119,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="stats" aria-label="Федерация в цифрах">
-        <div className="container">
-          <div className="stats__list">
-            {stats.map((s) => (
-              <Link key={s.label} href={s.href} className="stats__item">
-                <span className="stats__num">{s.n}</span>
-                <span className="stats__label">{s.label}</span>
-              </Link>
-            ))}
+      {showStats ? (
+        <section className="stats" aria-label="Федерация в цифрах">
+          <div className="container">
+            <div className="stats__list">
+              {stats.map((s) => (
+                <Link key={s.label} href={s.href} className="stats__item">
+                  <span className="stats__num">{s.n}</span>
+                  <span className="stats__label">{s.label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {upcoming.length > 0 || recent.length > 0 ? (
         <section className="block" aria-labelledby="events-title">

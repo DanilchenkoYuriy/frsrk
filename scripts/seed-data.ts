@@ -31,7 +31,7 @@ export const MUNICIPALITIES = [
 
 export const PEOPLE = [
   { id: "zhmakina", name: "Жмакина Виктория Николаевна", position: "Президент", group: "leadership", order: 1, city: "simferopol" },
-  { id: "danilchenko", name: "Данильченко Юрий Леонидович", position: "Вице-президент, главный тренер сборной", group: "leadership", order: 2, city: "yalta" },
+  { id: "danilchenko", name: "Данильченко Юрий Леонидович", position: "Вице-президент, и. о. главного тренера сборной", group: "leadership", order: 2, city: "yalta" },
   { id: "dmitrieva", name: "Дмитриева Лариса Ивановна", position: "Представитель федерации", group: "representative", order: 10, city: "dzhankoy" },
   { id: "dyagovets", name: "Дяговец Марина Ованесовна", position: "Представитель федерации", group: "representative", order: 11, city: "feodosiya" },
 ] as const;
