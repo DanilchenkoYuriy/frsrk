@@ -225,6 +225,13 @@ ol {
   color: var(--navy-800);
 }
 
+/* На телефоне в шапке остаётся только расшифровка названия, без аббревиатуры. */
+@media (max-width: 767px) {
+  .brand__short {
+    display: none;
+  }
+}
+
 @media (min-width: 768px) {
   .brand__short {
     font-size: 1.9rem;
@@ -314,7 +321,9 @@ ol {
 .burger {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  min-width: 44px;
   min-height: 44px;
   padding: 0 4px;
   background: none;
@@ -325,7 +334,7 @@ ol {
   cursor: pointer;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1080px) {
   .topnav__list {
     display: flex;
   }
@@ -428,7 +437,7 @@ ol {
   color: var(--navy-900);
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1080px) {
   .topnav__brand-mobile {
     display: none;
   }
@@ -476,7 +485,7 @@ ol {
   margin-left: auto;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1080px) {
   .topnav__cta {
     margin-left: 0;
   }

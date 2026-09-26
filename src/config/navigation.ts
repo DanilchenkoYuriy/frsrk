@@ -14,6 +14,7 @@ export const mainNav: readonly NavItem[] = [
   { label: "Участникам", href: "/participants" },
   { label: "О федерации", href: "/about" },
   { label: "Контакты", href: "/contacts" },
+  { label: "Антидопинг", href: "/participants/antidoping" },
 ];
 
 export const ctaNav = { label: "Найти секцию", href: "/sections" } as const;

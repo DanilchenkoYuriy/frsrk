@@ -13,13 +13,18 @@ interface Props {
   telegram?: string | null;
 }
 
-const isCurrent = (pathname: string, href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+const matches = (pathname: string, href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+
+/** Подсвечивается один пункт: самый точный. На /participants/antidoping это «Антидопинг», а не «Участникам». */
+const currentHref = (pathname: string, items: readonly NavItem[]) =>
+  items.filter((i) => matches(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
 export function SiteNav({ items, cta, vk, telegram }: Props) {
   const pathname = usePathname();
   // Меню открыто только на той странице, где его открыли: при переходе оно закрывается само.
   const [openedOn, setOpenedOn] = useState<string | null>(null);
   const open = openedOn === pathname;
+  const current = currentHref(pathname, items);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -47,7 +52,7 @@ export function SiteNav({ items, cta, vk, telegram }: Props) {
               <Link
                 href={item.href}
                 className={`topnav__link${item.children ? " topnav__link--parent" : ""}`}
-                aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
+                aria-current={current === item.href ? "page" : undefined}
               >
                 {item.label}
               </Link>
@@ -66,8 +71,7 @@ export function SiteNav({ items, cta, vk, telegram }: Props) {
         <Link href={cta.href} className="btn btn--red btn--sm topnav__cta">
           {cta.label}
         </Link>
-        <button type="button" className="burger" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpenedOn(open ? null : pathname)}>
-          Меню
+        <button type="button" className="burger" aria-label="Меню" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpenedOn(open ? null : pathname)}>
           <span className="burger__icon" aria-hidden="true" />
         </button>
       </div>
@@ -79,12 +83,12 @@ export function SiteNav({ items, cta, vk, telegram }: Props) {
             Закрыть
           </button>
         </div>
-        <Link href={cta.href} aria-current={isCurrent(pathname, cta.href) ? "page" : undefined}>
+        <Link href={cta.href} aria-current={matches(pathname, cta.href) ? "page" : undefined}>
           {cta.label}
         </Link>
         {items.map((item) => (
           <div key={item.href}>
-            <Link href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
+            <Link href={item.href} aria-current={current === item.href ? "page" : undefined}>
               {item.label}
             </Link>
             {item.children ? (
