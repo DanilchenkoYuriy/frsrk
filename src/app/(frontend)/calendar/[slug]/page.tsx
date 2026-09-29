@@ -55,22 +55,16 @@ export default async function EventPage({ params }: Props) {
               </section>
             ) : null}
 
-            {status === "finished" || protocols.length > 0 ? (
+            {protocols.length > 0 ? (
               <section style={{ marginTop: 40 }} aria-labelledby="ev-results">
                 <h2 className="h3" id="ev-results">
                   Результаты и протоколы
                 </h2>
-                {protocols.length > 0 ? (
-                  <ul>
-                    {protocols.map(({ kind, doc }) => (
-                      <DocumentRow key={doc.id} doc={{ ...doc, title: `${labelOf(EVENT_DOC_KINDS, kind)}: ${doc.title}` }} />
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="empty" style={{ paddingTop: 0 }}>
-                    Протоколы этого мероприятия пока не опубликованы.
-                  </p>
-                )}
+                <ul>
+                  {protocols.map(({ kind, doc }) => (
+                    <DocumentRow key={doc.id} doc={{ ...doc, title: `${labelOf(EVENT_DOC_KINDS, kind)}: ${doc.title}` }} />
+                  ))}
+                </ul>
               </section>
             ) : null}
           </div>
