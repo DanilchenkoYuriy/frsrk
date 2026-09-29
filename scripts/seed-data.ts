@@ -65,8 +65,17 @@ export const SECTIONS = [
 
 export const EVENTS = [
   {
+    slug: "respublikanskie-sorevnovaniya-2026",
+    title: "Республиканские соревнования",
+    type: "competition",
+    level: "republic",
+    dateFrom: "2026-09-19",
+    dateTo: "2026-09-19",
+    city: "simferopol",
+  },
+  {
     slug: "kubok-kryma-2026",
-    title: "Республиканские соревнования. Кубок Крыма",
+    title: "Кубок Крыма",
     type: "competition",
     level: "republic",
     dateFrom: "2026-09-19",

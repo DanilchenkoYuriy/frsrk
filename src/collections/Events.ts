@@ -11,7 +11,7 @@ export const Events: CollectionConfig = {
     useAsTitle: "title",
     defaultColumns: ["title", "dateFrom", "type", "level", "published"],
     group: "Содержимое",
-    description: "Соревнования, семинары, сборы. Статус («Предстоит», «Завершено») считается по датам сам. Протоколы добавляйте в блок «Документы мероприятия».",
+    description: "Соревнования, семинары, сборы. Статус («Предстоит», «Завершено») считается по датам сам. Протоколы добавляйте в блок «Документы мероприятия». Несколько мероприятий в один день — это отдельные записи, они не объединяются.",
   },
   defaultSort: "-dateFrom",
   access: { read: publishedOrStaff, create: isStaff, update: isStaff, delete: isStaff },
@@ -54,7 +54,7 @@ export const Events: CollectionConfig = {
     {
       name: "documents",
       type: "array",
-      label: "Документы мероприятия (положение, протоколы, фотоотчёт)",
+      label: "Документы мероприятия (положение, протоколы, отчёт судьи, план безопасности, фотоотчёт)",
       fields: [
         { name: "kind", type: "select", label: "Что это", required: true, options: EVENT_DOC_KINDS.map(({ value, label }) => ({ value, label })) },
         { name: "document", type: "relationship", relationTo: "documents", label: "Файл из раздела «Документы»", required: true },

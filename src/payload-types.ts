@@ -353,7 +353,7 @@ export interface News {
   createdAt: string;
 }
 /**
- * Соревнования, семинары, сборы. Статус («Предстоит», «Завершено») считается по датам сам. Протоколы добавляйте в блок «Документы мероприятия».
+ * Соревнования, семинары, сборы. Статус («Предстоит», «Завершено») считается по датам сам. Протоколы добавляйте в блок «Документы мероприятия». Несколько мероприятий в один день — это отдельные записи, они не объединяются.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
@@ -387,7 +387,17 @@ export interface Event {
   registrationDeadline?: string | null;
   documents?:
     | {
-        kind: 'regulation' | 'rules' | 'invitation' | 'start-protocol' | 'final-protocol' | 'photo-report' | 'other';
+        kind:
+          | 'regulation'
+          | 'rules'
+          | 'invitation'
+          | 'start-protocol'
+          | 'final-protocol'
+          | 'judge-report'
+          | 'security-plan'
+          | 'judges-reference'
+          | 'photo-report'
+          | 'other';
         document: number | Document;
         id?: string | null;
       }[]

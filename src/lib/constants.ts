@@ -35,6 +35,9 @@ export const EVENT_DOC_KINDS = [
   { value: "invitation", label: "Приглашение" },
   { value: "start-protocol", label: "Стартовый протокол" },
   { value: "final-protocol", label: "Итоговый протокол" },
+  { value: "judge-report", label: "Отчёт главного судьи" },
+  { value: "security-plan", label: "План обеспечения безопасности (согласование с МВД)" },
+  { value: "judges-reference", label: "Справка о судейской коллегии" },
   { value: "photo-report", label: "Фотоотчёт" },
   { value: "other", label: "Другой документ" },
 ] as const;
