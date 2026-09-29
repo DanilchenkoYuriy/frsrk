@@ -90,8 +90,8 @@ export const SiteSettings: GlobalConfig = {
           label: "Реквизиты",
           fields: [
             { name: "ogrn", type: "text", label: "ОГРН", defaultValue: "1249100003448" },
-            { name: "inn", type: "text", label: "ИНН" },
-            { name: "kpp", type: "text", label: "КПП" },
+            { name: "inn", type: "text", label: "ИНН", defaultValue: "9102295198" },
+            { name: "kpp", type: "text", label: "КПП", defaultValue: "9102010001" },
             { name: "bankDetails", type: "textarea", label: "Банковские реквизиты" },
             {
               name: "accreditation",
@@ -101,7 +101,7 @@ export const SiteSettings: GlobalConfig = {
                 { name: "orderNumber", type: "text", label: "Номер приказа", defaultValue: "242-ОД" },
                 { name: "orderDate", type: "date", label: "Дата приказа", defaultValue: "2024-04-22T00:00:00.000Z", admin: { date: { pickerAppearance: "dayOnly", displayFormat: "dd.MM.yyyy" } } },
                 { name: "issuedBy", type: "text", label: "Кем выдана", defaultValue: "Министерство спорта Республики Крым" },
-                { name: "term", type: "text", label: "Срок аккредитации", defaultValue: "три года со дня подписания приказа" },
+                { name: "term", type: "text", label: "Срок аккредитации", defaultValue: "три года со дня подписания приказа, до 22 апреля 2027 года" },
                 { name: "vrvsCode", type: "text", label: "Код вида спорта по ВРВС", defaultValue: "1780001411Я" },
               ],
             },

@@ -21,6 +21,8 @@
     "migrate": "payload migrate",
     "seed": "tsx --env-file=.env scripts/seed.ts",
     "seed:prod": "tsx --env-file=.env.prod scripts/seed.ts",
+    "update-docs": "tsx --env-file=.env scripts/update-documents-2026-09.ts",
+    "update-docs:prod": "tsx --env-file=.env.prod scripts/update-documents-2026-09.ts",
     "images:optimize": "tsx scripts/prepare-assets.ts",
     "check": "npm run typecheck && npm run lint && npm test && npm run build"
   },

@@ -85,14 +85,14 @@ export default async function HomePage() {
     { href: "/documents/audio", icon: "music", title: "Музыка для соревнований", text: `${audio.length} ${plural(audio.length, ["дорожка", "дорожки", "дорожек"])}, слушать и скачать` },
   ].filter((t) => !t.href.includes("federation") || countIn("federation") > 0);
 
-  // Полоса с цифрами пока скрыта: цифры маленькие. Чтобы вернуть, поставьте true.
-  const showStats = false;
   const stats = [
-    { n: sections.length, label: plural(sections.length, ["секция в Крыму", "секции в Крыму", "секций в Крыму"]), href: "/sections" },
-    { n: `${republicWithSections}/${republic.length || 25}`, label: "муниципальных образований Крыма с секциями", href: "/sections" },
-    { n: upcoming.length, label: `${plural(upcoming.length, ["ближайшее мероприятие", "ближайших мероприятия", "ближайших мероприятий"])} в календаре`, href: "/calendar" },
-    { n: documents.length, label: `${plural(documents.length, ["документ", "документа", "документов"])} и ${audio.length} ${plural(audio.length, ["дорожка", "дорожки", "дорожек"])}`, href: "/documents" },
-  ];
+    { icon: "pin", n: sections.length, label: plural(sections.length, ["секция в Крыму", "секции в Крыму", "секций в Крыму"]), href: "/sections" },
+    { icon: "flag", n: republicWithSections, label: plural(republicWithSections, ["муниципальное образование Крыма с секцией", "муниципальных образования Крыма с секциями", "муниципальных образований Крыма с секциями"]), href: "/sections" },
+    { icon: "calendar", n: upcoming.length, label: `${plural(upcoming.length, ["ближайшее мероприятие", "ближайших мероприятия", "ближайших мероприятий"])} в календаре`, href: "/calendar" },
+    { icon: "scroll", n: documents.length, label: `${plural(documents.length, ["документ", "документа", "документов"])} и ${audio.length} ${plural(audio.length, ["дорожка", "дорожки", "дорожек"])}`, href: "/documents" },
+  ].filter((s) => s.n > 0);
+  // Полоса скрыта, пока показывать особо нечем: секций и мероприятий мало. Вернуть, когда будет чем похвастаться — поставьте true.
+  const showStats = false;
 
   return (
     <>
@@ -125,8 +125,11 @@ export default async function HomePage() {
             <div className="stats__list">
               {stats.map((s) => (
                 <Link key={s.label} href={s.href} className="stats__item">
-                  <span className="stats__num">{s.n}</span>
-                  <span className="stats__label">{s.label}</span>
+                  <span className="stats__icon">{ICONS[s.icon]}</span>
+                  <span className="stats__text">
+                    <span className="stats__num">{s.n}</span>
+                    <span className="stats__label">{s.label}</span>
+                  </span>
                 </Link>
               ))}
             </div>

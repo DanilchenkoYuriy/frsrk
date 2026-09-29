@@ -25,4 +25,7 @@ export const ICONS: Record<string, ReactElement> = {
   music: stroke("M9 18V6l10-2v12M9 18a3 3 0 1 1-3-3 3 3 0 0 1 3 3zM19 16a3 3 0 1 1-3-3 3 3 0 0 1 3 3z"),
   cap: stroke("M2 9l10-5 10 5-10 5L2 9zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"),
   shield: stroke("M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"),
+  pin: stroke("M12 21s7-6.4 7-11.5a7 7 0 1 0-14 0c0 5.1 7 11.5 7 11.5zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"),
+  flag: stroke("M6 21V4M6 4h12l-3 4 3 4H6"),
+  calendar: stroke("M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM3 9h18M8 2v4M16 2v4"),
 };
