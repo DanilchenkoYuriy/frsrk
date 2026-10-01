@@ -26,7 +26,7 @@ export default async function SectionsPage({ searchParams }: { searchParams: Pro
       citySlug: m?.slug ?? "",
       cityName: m?.name ?? "",
       organization: s.organization ?? undefined,
-      address: s.address,
+      address: [s.locality, s.address].filter(Boolean).join(", "),
       coach: s.coach ?? undefined,
       ages,
       schedule: s.schedule ?? undefined,

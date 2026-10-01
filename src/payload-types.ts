@@ -455,6 +455,13 @@ export interface Section {
   title: string;
   municipality: number | Municipality;
   organization?: string | null;
+  /**
+   * Например: село Раздольное. Выводится перед улицей.
+   */
+  locality?: string | null;
+  /**
+   * Например: ул. Школьная, 22. Город или село впишите в поле выше.
+   */
   address: string;
   coach?: string | null;
   ageFrom?: number | null;
@@ -941,6 +948,7 @@ export interface SectionsSelect<T extends boolean = true> {
   title?: T;
   municipality?: T;
   organization?: T;
+  locality?: T;
   address?: T;
   coach?: T;
   ageFrom?: T;

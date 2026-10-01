@@ -19,7 +19,8 @@ export const Sections: CollectionConfig = {
     { name: "title", type: "text", label: "Название секции или клуба", required: true },
     { name: "municipality", type: "relationship", relationTo: "municipalities", label: "Муниципальное образование", required: true },
     { name: "organization", type: "text", label: "Организация (школа, центр, клуб)" },
-    { name: "address", type: "text", label: "Адрес занятий", required: true },
+    { name: "locality", type: "text", label: "Город, село или посёлок", admin: { description: "Например: село Раздольное. Выводится перед улицей." } },
+    { name: "address", type: "text", label: "Улица и дом", required: true, admin: { description: "Например: ул. Школьная, 22. Город или село впишите в поле выше." } },
     { name: "coach", type: "text", label: "Тренер (ФИО)" },
     {
       type: "row",
