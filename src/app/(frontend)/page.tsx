@@ -4,18 +4,11 @@ import { EVENT_STATUS_LABELS, eventStatus, todayIso } from "@/lib/status";
 import { EVENT_LEVELS, EVENT_TYPES, labelOf } from "@/lib/constants";
 import { dayAndMonth, formatDate, formatRange } from "@/lib/dates";
 import { telHref } from "@/lib/site";
+import { formatInt, jumpStatsOf, jumpsWord, plural } from "@/lib/stats";
 import { Picture } from "@/components/ui/Picture";
 import { ICONS } from "@/components/ui/Icons";
 import { CrimeaMap } from "@/components/sections/CrimeaMap";
 import { HeroVideo } from "@/components/home/HeroVideo";
-
-const plural = (n: number, forms: [string, string, string]) => {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return forms[0];
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return forms[1];
-  return forms[2];
-};
 
 function EventRowHome({ e, today }: { e: Event; today: string }) {
   const status = eventStatus(e, today);
@@ -44,6 +37,29 @@ function EventRowHome({ e, today }: { e: Event; today: string }) {
   );
 }
 
+function EventDone({ e, today }: { e: Event; today: string }) {
+  const { rows, total } = jumpStatsOf(e.jumpStats);
+  if (!rows.length) return <div className="ev-list"><EventRowHome e={e} today={today} /></div>;
+  return (
+    <Link href={`/calendar/${e.slug}`} className="done">
+      <span className="done__date">{formatRange(e.dateFrom, e.dateTo)}</span>
+      <h3 className="done__title">{e.title}</h3>
+      <p className="done__total">
+        <span className="done__num">{formatInt(total)}</span> {jumpsWord(total)} за соревнование
+      </p>
+      <ul className="done__rows">
+        {rows.map((r) => (
+          <li key={r.label}>
+            <span>{r.label}</span>
+            <b>{formatInt(r.jumps)}</b>
+          </li>
+        ))}
+      </ul>
+      <span className="done__go">Результаты и протоколы</span>
+    </Link>
+  );
+}
+
 export default async function HomePage() {
   const today = todayIso();
   const [settings, events, municipalities, sections, news, documents, audio, galleries] = await Promise.all([
@@ -60,7 +76,8 @@ export default async function HomePage() {
   const upcoming = events.filter((e) => eventStatus(e, today) !== "finished").sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
   const recent = events.filter((e) => eventStatus(e, today) === "finished").sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
   const featured = upcoming[0];
-  const restUpcoming = upcoming.slice(1, 4);
+  const nextUpcoming = upcoming[1];
+  const lastDone = recent[0];
 
   const counts = new Map<string, number>();
   for (const s of sections) {
@@ -151,8 +168,8 @@ export default async function HomePage() {
                 Весь календарь
               </Link>
             </div>
-            {featured ? (
-              <div className="events-home">
+            <div className={featured ? "events-home" : undefined}>
+              {featured ? (
                 <Link href={`/calendar/${featured.slug}`} className="feature">
                   <span className="feature__date">{formatRange(featured.dateFrom, featured.dateTo)}</span>
                   <h3 className="feature__title">{featured.title}</h3>
@@ -161,32 +178,25 @@ export default async function HomePage() {
                   </p>
                   <span className="feature__go">Подробнее</span>
                 </Link>
-                {restUpcoming.length ? (
-                  <div className="ev-list">
-                    {restUpcoming.map((e) => (
-                      <EventRowHome key={e.id} e={e} today={today} />
-                    ))}
-                  </div>
-                ) : recent.length ? (
-                  <div>
-                    <p className="month-title" style={{ marginTop: 0 }}>
-                      Недавно прошло
-                    </p>
+              ) : null}
+              {nextUpcoming || lastDone ? (
+                <div className="events-home__side">
+                  {nextUpcoming ? (
                     <div className="ev-list">
-                      {recent.slice(0, 3).map((e) => (
-                        <EventRowHome key={e.id} e={e} today={today} />
-                      ))}
+                      <EventRowHome e={nextUpcoming} today={today} />
                     </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <div className="ev-list">
-                {recent.slice(0, 4).map((e) => (
-                  <EventRowHome key={e.id} e={e} today={today} />
-                ))}
-              </div>
-            )}
+                  ) : null}
+                  {lastDone ? (
+                    <div>
+                      <p className="month-title" style={{ marginTop: 0 }}>
+                        Недавно прошло
+                      </p>
+                      <EventDone e={lastDone} today={today} />
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
         </section>
       ) : null}

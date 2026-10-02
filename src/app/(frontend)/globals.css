@@ -917,6 +917,98 @@ ol {
   font-size: 0.92rem;
 }
 
+.events-home__side {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.done {
+  display: grid;
+  gap: 10px;
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.done:hover {
+  color: var(--ink);
+  border-color: var(--blue-200);
+  box-shadow: var(--shadow);
+}
+
+.done__date {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.done__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.done__total {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.done__num {
+  color: var(--blue-800);
+  font-size: clamp(1.7rem, 1.2rem + 1.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.done__rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.92rem;
+}
+
+.done__rows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+
+.done__go {
+  color: var(--blue-700);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.jump-stats {
+  margin-top: 40px;
+}
+
+.jump-stats__total {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.jump-stats__num {
+  color: var(--blue-800);
+  font-size: clamp(1.9rem, 1.3rem + 1.8vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.jump-stats__note {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 .ev-list {
   display: grid;
   align-content: start;

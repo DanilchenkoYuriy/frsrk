@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { isStaff, publishedOrStaff } from "@/access";
-import { EVENT_DOC_KINDS, EVENT_LEVELS, EVENT_TYPES } from "@/lib/constants";
+import { DISCIPLINES, EVENT_DOC_KINDS, EVENT_LEVELS, EVENT_TYPES } from "@/lib/constants";
 import { slugFrom } from "@/hooks/slug";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/hooks/revalidate";
 
@@ -60,6 +60,23 @@ export const Events: CollectionConfig = {
         { name: "document", type: "relationship", relationTo: "documents", label: "Файл из раздела «Документы»", required: true },
       ],
     },
+    {
+      name: "jumpStats",
+      type: "array",
+      label: "Статистика прыжков по дисциплинам (заполняется после соревнования)",
+      labels: { singular: "Дисциплина", plural: "Дисциплины" },
+      admin: { description: "Добавьте строку на каждую дисциплину. Общий итог сайт посчитает сам. Показывается на главной и на странице мероприятия, когда оно завершилось." },
+      fields: [
+        {
+          type: "row",
+          fields: [
+            { name: "discipline", type: "select", label: "Дисциплина", required: true, options: DISCIPLINES.map(({ value, label }) => ({ value, label })), admin: { width: "65%" } },
+            { name: "jumps", type: "number", label: "Число прыжков", required: true, min: 0, admin: { width: "35%" } },
+          ],
+        },
+      ],
+    },
+    { name: "jumpStatsNote", type: "textarea", label: "Что учтено в подсчёте прыжков", admin: { description: "Одно-два предложения под цифрами. Например: без учёта разминочных прыжков и вольных выступлений." } },
     { name: "published", type: "checkbox", label: "Показывать на сайте", defaultValue: false, admin: { position: "sidebar" } },
   ],
 };

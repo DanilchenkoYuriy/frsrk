@@ -402,6 +402,31 @@ export interface Event {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Добавьте строку на каждую дисциплину. Общий итог сайт посчитает сам. Показывается на главной и на странице мероприятия, когда оно завершилось.
+   */
+  jumpStats?:
+    | {
+        discipline:
+          | 'jumps-30'
+          | 'jumps-180'
+          | 'freestyle'
+          | 'double-jumps'
+          | 'triple-jumps'
+          | 'jumps-4'
+          | 'two-ropes-4'
+          | 'freestyle-group'
+          | 'two-ropes-1'
+          | 'two-ropes-2'
+          | 'team';
+        jumps: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Одно-два предложения под цифрами. Например: без учёта разминочных прыжков и вольных выступлений.
+   */
+  jumpStatsNote?: string | null;
   published?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -924,6 +949,14 @@ export interface EventsSelect<T extends boolean = true> {
         document?: T;
         id?: T;
       };
+  jumpStats?:
+    | T
+    | {
+        discipline?: T;
+        jumps?: T;
+        id?: T;
+      };
+  jumpStatsNote?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;

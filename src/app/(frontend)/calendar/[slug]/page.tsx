@@ -4,6 +4,7 @@ import { getEvent, populated, type DocumentDoc, type Municipality } from "@/lib/
 import { EVENT_DOC_KINDS, EVENT_LEVELS, EVENT_TYPES, labelOf } from "@/lib/constants";
 import { formatDate, formatRange } from "@/lib/dates";
 import { EVENT_STATUS_LABELS, eventStatus, todayIso } from "@/lib/status";
+import { formatInt, jumpStatsOf, jumpsWord } from "@/lib/stats";
 import { PageHead } from "@/components/ui/PageHead";
 import { SLOGANS } from "@/config/slogans";
 import { RichText } from "@/components/ui/RichText";
@@ -32,6 +33,7 @@ export default async function EventPage({ params }: Props) {
 
   const protocols = docs.filter((d) => d.kind === "start-protocol" || d.kind === "final-protocol");
   const others = docs.filter((d) => !protocols.includes(d));
+  const { rows: jumpRows, total: jumpTotal } = jumpStatsOf(event.jumpStats);
   const regOpen = Boolean(event.registrationUrl) && status !== "finished" && (!event.registrationDeadline || today <= event.registrationDeadline.slice(0, 10));
 
   return (
@@ -41,6 +43,36 @@ export default async function EventPage({ params }: Props) {
         <div className="container layout-2">
           <div>
             <RichText data={event.description} />
+
+            {status === "finished" && jumpRows.length > 0 ? (
+              <section className="jump-stats" aria-labelledby="ev-jumps">
+                <h2 className="h3" id="ev-jumps">
+                  Итоги: прыжки
+                </h2>
+                <p className="jump-stats__total">
+                  <span className="jump-stats__num">{formatInt(jumpTotal)}</span> {jumpsWord(jumpTotal)} за соревнование
+                </p>
+                <div className="rank-table-wrap">
+                  <table className="rank-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Дисциплина</th>
+                        <th scope="col">Прыжков</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jumpRows.map((r) => (
+                        <tr key={r.label}>
+                          <th scope="row">{r.label}</th>
+                          <td>{formatInt(r.jumps)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {event.jumpStatsNote ? <p className="jump-stats__note">{event.jumpStatsNote}</p> : null}
+              </section>
+            ) : null}
 
             {others.length > 0 ? (
               <section style={{ marginTop: 40 }} aria-labelledby="ev-docs">
