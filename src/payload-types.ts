@@ -1102,6 +1102,14 @@ export interface SiteSetting {
   legalName?: string | null;
   description?: string | null;
   /**
+   * Если пусто, показывается: «От первого прыжка до сборной Крыма».
+   */
+  heroTitle?: string | null;
+  /**
+   * Если пусто, показывается стандартный текст про секции, календарь, положения и протоколы.
+   */
+  heroLead?: string | null;
+  /**
    * Она же остаётся запасной, пока грузится видео, и стоит на тёмных полосах внутренних страниц.
    */
   heroImage?: (number | null) | Media;
@@ -1159,6 +1167,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   shortName?: T;
   legalName?: T;
   description?: T;
+  heroTitle?: T;
+  heroLead?: T;
   heroImage?: T;
   heroMode?: T;
   heroVideo?: T;

@@ -105,9 +105,9 @@ export default async function HomePage() {
         {heroVideo?.url ? <HeroVideo src={heroVideo.url} allowMobile={Boolean(settings.heroVideoMobile)} /> : null}
         <div className="container hero__inner">
           <h1 className="hero__title" id="hero-title">
-            Спортивная скакалка в Республике Крым
+            {settings.heroTitle || "От первого прыжка до сборной Крыма"}
           </h1>
-          <p className="hero__lead">Официальный сайт Федерации роуп скиппинга (спортивной скакалки) Республики Крым. Секции, календарь соревнований, документы и протоколы.</p>
+          <p className="hero__lead">{settings.heroLead || "Роуп скиппинг (спортивная скакалка): секции по городам республики, календарь соревнований, положения и протоколы."}</p>
           <div className="hero__actions">
             <Link href="/sections" className="btn btn--red">
               Найти секцию

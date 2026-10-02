@@ -22,6 +22,8 @@ export const SiteSettings: GlobalConfig = {
             { name: "shortName", type: "text", label: "Сокращение", required: true, defaultValue: "ФРСРК" },
             { name: "legalName", type: "text", label: "Название по Уставу (юридическое)", defaultValue: "Общественная организация «Федерация роуп скиппинга (спортивной скакалки) Республики Крым»" },
             { name: "description", type: "textarea", label: "Описание сайта для поисковиков и соцсетей", defaultValue: "Официальный сайт Федерации роуп скиппинга (спортивной скакалки) Республики Крым: календарь соревнований, секции, документы, новости." },
+            { name: "heroTitle", type: "text", label: "Заголовок на первом экране главной", admin: { description: "Если пусто, показывается: «От первого прыжка до сборной Крыма»." } },
+            { name: "heroLead", type: "textarea", label: "Текст под заголовком на первом экране", admin: { description: "Если пусто, показывается стандартный текст про секции, календарь, положения и протоколы." } },
             { name: "heroImage", type: "upload", relationTo: "media", label: "Главная картинка на первом экране", admin: { description: "Она же остаётся запасной, пока грузится видео, и стоит на тёмных полосах внутренних страниц." } },
             {
               name: "heroMode",
