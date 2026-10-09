@@ -14,15 +14,17 @@ interface Props {
   crumbs?: Crumb[];
   /** Раздел, чья картинка полосы берётся из «Данные федерации → Полосы заголовков» */
   banner?: keyof NonNullable<SiteSetting["banners"]>;
+  /** Своя картинка полосы (у раздела из админки). Важнее, чем banner */
+  image?: Media | null;
   /** Рукописная надпись справа (только на компьютере) */
   slogan?: string;
   children?: ReactNode;
 }
 
 /** Заголовок внутренней страницы: тёмная полоса с фото главной страницы. */
-export async function PageHead({ title, lead, crumbs = [], slogan, banner, children }: Props) {
+export async function PageHead({ title, lead, crumbs = [], slogan, banner, image, children }: Props) {
   const settings = await getSettings();
-  const hero = (banner ? populated<Media>(settings.banners?.[banner]) : null) ?? populated<Media>(settings.banners?.default) ?? populated<Media>(settings.heroImage);
+  const hero = image ?? (banner ? populated<Media>(settings.banners?.[banner]) : null) ?? populated<Media>(settings.banners?.default) ?? populated<Media>(settings.heroImage);
   return (
     <header className="banner">
       {hero ? (
@@ -37,7 +39,7 @@ export async function PageHead({ title, lead, crumbs = [], slogan, banner, child
               <Link href="/">Главная</Link>
             </li>
             {crumbs.map((c) => (
-              <li key={c.label}>{c.href ? <Link href={c.href}>{c.label}</Link> : c.label}</li>
+              <li key={c.label + (c.href ?? "")}>{c.href ? <Link href={c.href}>{c.label}</Link> : c.label}</li>
             ))}
           </ol>
         </nav>

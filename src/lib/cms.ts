@@ -15,6 +15,8 @@ import type {
   Person,
   RankingEntry,
   Section,
+  SiteLayout,
+  SiteSection,
   SiteSetting,
   Video,
 } from "@/payload-types";
@@ -32,6 +34,8 @@ export type {
   Person,
   RankingEntry,
   Section,
+  SiteLayout,
+  SiteSection,
   SiteSetting,
   Video,
 };
@@ -51,9 +55,40 @@ export const getSettings = cached("settings", async (): Promise<SiteSetting> => 
   return p.findGlobal({ slug: "site-settings", depth: 1, ...publicRead });
 });
 
-export const getPage = cached("page", async (key: Page["key"]): Promise<Page | null> => {
+/** Шапка, меню, соцсети и подвал. Глубина 2: у ссылок на страницы нужен их раздел, чтобы собрать адрес. */
+export const getLayout = cached("layout", async (): Promise<SiteLayout> => {
   const p = await payload();
-  const res = await p.find({ collection: "pages", where: { key: { equals: key } }, limit: 1, depth: 1, ...publicRead });
+  return p.findGlobal({ slug: "site-layout", depth: 2, ...publicRead });
+});
+
+export const getSiteSection = cached("site-section", async (slug: string): Promise<SiteSection | null> => {
+  const p = await payload();
+  const res = await p.find({ collection: "site-sections", where: { slug: { equals: slug } }, limit: 1, depth: 2, ...publicRead });
+  return res.docs[0] ?? null;
+});
+
+export const getSiteSections = cached("site-sections", async (): Promise<SiteSection[]> => {
+  const p = await payload();
+  const res = await p.find({ collection: "site-sections", limit: 100, depth: 2, ...publicRead });
+  return res.docs;
+});
+
+/** Новые страницы, созданные в админке (без встроенного ключа). */
+export const getCustomPages = cached("custom-pages", async (): Promise<Page[]> => {
+  const p = await payload();
+  const res = await p.find({ collection: "pages", where: { key: { exists: false } }, limit: 500, depth: 1, ...publicRead });
+  return res.docs;
+});
+
+export const getPageBySlug = cached("page-by-slug", async (slug: string): Promise<Page | null> => {
+  const p = await payload();
+  const res = await p.find({ collection: "pages", where: { and: [{ slug: { equals: slug } }, { key: { exists: false } }] }, limit: 1, depth: 2, ...publicRead });
+  return res.docs[0] ?? null;
+});
+
+export const getPage = cached("page", async (key: NonNullable<Page["key"]>): Promise<Page | null> => {
+  const p = await payload();
+  const res = await p.find({ collection: "pages", where: { key: { equals: key } }, limit: 1, depth: 2, ...publicRead });
   return res.docs[0] ?? null;
 });
 

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/cms";
-import { footerColumns } from "@/config/navigation";
+import { getSiteLayout } from "@/lib/layout";
 import { telHref } from "@/lib/site";
 
 export async function SiteFooter() {
-  const s = await getSettings();
+  const [s, { logo, footerColumns }] = await Promise.all([getSettings(), getSiteLayout()]);
   const year = new Date().getFullYear();
   return (
     <footer className="footer">
@@ -14,7 +14,7 @@ export async function SiteFooter() {
           <div>
             <div className="footer__brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/frsrk-logo.png" alt="" width={577} height={433} />
+              {logo ? <img src={logo.url} alt="" width={logo.width} height={logo.height} /> : null}
               <div>
                 <p className="footer__name">{s.fullName}</p>
                 {s.legalName ? <p className="footer__legal">{s.legalName}</p> : null}
@@ -31,7 +31,7 @@ export async function SiteFooter() {
               <p className="footer__heading">{col.title}</p>
               <ul className="footer__links">
                 {col.links.map((l) => (
-                  <li key={l.href}>
+                  <li key={l.href + l.label}>
                     <Link href={l.href}>{l.label}</Link>
                   </li>
                 ))}

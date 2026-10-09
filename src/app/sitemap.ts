@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { getEvents, getGalleries, getNews } from "@/lib/cms";
+import { getCustomPages, getEvents, getGalleries, getNews } from "@/lib/cms";
+import { pageHref } from "@/lib/links";
 import { absoluteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -7,11 +8,15 @@ export const dynamic = "force-dynamic";
 const STATIC = ["/", "/sections", "/calendar", "/news", "/documents", "/documents/rules", "/documents/audio", "/participants/coaches", "/participants/judges", "/participants/parents", "/participants/ranking", "/participants/antidoping", "/media", "/about", "/about/leadership", "/about/requisites", "/about/history", "/contacts", "/legal/privacy", "/legal/cookies"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [events, news, galleries] = await Promise.all([getEvents(), getNews(500), getGalleries()]);
+  const [events, news, galleries, pages] = await Promise.all([getEvents(), getNews(500), getGalleries(), getCustomPages()]);
   return [
     ...STATIC.map((p) => ({ url: absoluteUrl(p) })),
     ...events.map((e) => ({ url: absoluteUrl(`/calendar/${e.slug}`), lastModified: e.updatedAt })),
     ...news.map((n) => ({ url: absoluteUrl(`/news/${n.slug}`), lastModified: n.updatedAt })),
+    ...pages.flatMap((p) => {
+      const href = pageHref(p);
+      return href ? [{ url: absoluteUrl(href), lastModified: p.updatedAt }] : [];
+    }),
     ...galleries.map((g) => ({ url: absoluteUrl(`/media/photos/${g.slug}`), lastModified: g.updatedAt })),
   ];
 }

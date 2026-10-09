@@ -7,7 +7,7 @@ export const SiteSettings: GlobalConfig = {
   label: "Данные федерации",
   admin: {
     group: "Система",
-    description: "Название, контакты, реквизиты и ссылки. Они выводятся в шапке, подвале, на странице «Контакты» и в документах.",
+    description: "Название, контакты и реквизиты. Они выводятся в шапке, подвале, на странице «Контакты» и в документах. Соцсети, логотип и меню: «Структура сайта → Шапка, меню и подвал».",
   },
   access: { read: () => true, update: isStaff },
   hooks: { afterChange: [revalidateGlobal] },
@@ -84,8 +84,6 @@ export const SiteSettings: GlobalConfig = {
             { name: "phone", type: "text", label: "Телефон", defaultValue: "+7 978 738-32-46" },
             { name: "email", type: "email", label: "Почта", defaultValue: "crimea.skipping@mail.ru" },
             { name: "address", type: "text", label: "Адрес", defaultValue: "295003, Республика Крым, г. Симферополь, ул. Балаклавская, д. 41, офис 118" },
-            { name: "vk", type: "text", label: "Ссылка на VK", defaultValue: "https://vk.ru/rope_skipping_crimea" },
-            { name: "telegram", type: "text", label: "Ссылка на Telegram", defaultValue: "https://t.me/+3uyHm_gL9wtmNzRi" },
           ],
         },
         {

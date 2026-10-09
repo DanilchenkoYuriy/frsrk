@@ -78,6 +78,7 @@ export interface Config {
     sections: Section;
     people: Person;
     pages: Page;
+    'site-sections': SiteSection;
     galleries: Gallery;
     'ranking-entries': RankingEntry;
     inquiries: Inquiry;
@@ -99,6 +100,7 @@ export interface Config {
     sections: SectionsSelect<false> | SectionsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    'site-sections': SiteSectionsSelect<false> | SiteSectionsSelect<true>;
     galleries: GalleriesSelect<false> | GalleriesSelect<true>;
     'ranking-entries': RankingEntriesSelect<false> | RankingEntriesSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
@@ -112,9 +114,11 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'site-layout': SiteLayout;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    'site-layout': SiteLayoutSelect<false> | SiteLayoutSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -517,7 +521,7 @@ export interface Section {
   createdAt: string;
 }
 /**
- * Тексты разделов: «О федерации», «Родителям», «Антидопинг», политика персональных данных. Пока текст пустой, на сайте написано, что раздел в разработке.
+ * Тексты разделов («О федерации», «Родителям», «Антидопинг» и другие) и новые страницы. Новая страница: заполните заголовок, адрес и раздел, затем добавьте её в меню («Структура сайта»). Пока текст пустой, на сайте написано, что раздел в разработке.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -525,19 +529,36 @@ export interface Section {
 export interface Page {
   id: number;
   title: string;
-  key:
-    | 'about'
-    | 'history'
-    | 'parents'
-    | 'antidoping'
-    | 'rules'
-    | 'education-judges'
-    | 'education-coaches'
-    | 'leadership'
-    | 'privacy'
-    | 'cookies'
-    | 'media';
+  /**
+   * Только для стандартных страниц сайта. У новой страницы оставьте пустым.
+   */
+  key?:
+    | (
+        | 'about'
+        | 'history'
+        | 'parents'
+        | 'antidoping'
+        | 'rules'
+        | 'education-judges'
+        | 'education-coaches'
+        | 'leadership'
+        | 'privacy'
+        | 'cookies'
+        | 'media'
+      )
+    | null;
+  /**
+   * Если пусто, адрес сделается из заголовка.
+   */
+  slug?: string | null;
+  /**
+   * Страница откроется внутри раздела, по адресу frsrk.ru/раздел/адрес. Не забудьте добавить её в пункты слева у раздела.
+   */
+  section?: (number | null) | SiteSection;
   lead?: string | null;
+  /**
+   * Если ниже нет вкладок, а в тексте три и больше заголовков второго уровня, текст сам делится на вкладки по этим заголовкам.
+   */
   body?: {
     root: {
       type: string;
@@ -553,6 +574,177 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Вкладки идут под текстом страницы. В каждой вкладке можно собрать блоки: текст, список документов, кнопки, картинку. Если вкладка одна, заголовков вкладок не будет, только её блоки.
+   */
+  tabs?:
+    | {
+        label: string;
+        hidden?: boolean | null;
+        blocks?:
+          | (
+              | {
+                  content: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'text';
+                }
+              | {
+                  title?: string | null;
+                  mode?: ('category' | 'manual') | null;
+                  category?:
+                    | (
+                        | 'federation'
+                        | 'rules'
+                        | 'classification'
+                        | 'regulations'
+                        | 'education'
+                        | 'orders'
+                        | 'antidoping'
+                        | 'forms'
+                      )
+                    | null;
+                  documents?: (number | Document)[] | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'documents';
+                }
+              | {
+                  buttons?:
+                    | {
+                        label: string;
+                        link?: {
+                          type?: ('route' | 'page' | 'url') | null;
+                          route?:
+                            | (
+                                | 'home'
+                                | 'calendar'
+                                | 'documents'
+                                | 'rules'
+                                | 'audio'
+                                | 'news'
+                                | 'media'
+                                | 'sections'
+                                | 'contacts'
+                                | 'participants'
+                                | 'coaches'
+                                | 'judges'
+                                | 'parents'
+                                | 'ranking'
+                                | 'antidoping'
+                                | 'about'
+                                | 'leadership'
+                                | 'requisites'
+                                | 'history'
+                                | 'privacy'
+                                | 'cookies'
+                              )
+                            | null;
+                          page?: (number | null) | Page;
+                          /**
+                           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                           */
+                          url?: string | null;
+                        };
+                        style?: ('red' | 'line') | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'buttons';
+                }
+              | {
+                  image: number | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'image';
+                }
+            )[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Разделы, где слева список пунктов, а справа содержимое: «О федерации», «Участникам» и новые. Чтобы добавить страницу в раздел, создайте её в «Текстовые страницы», выберите там раздел, а здесь добавьте пункт слева.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-sections".
+ */
+export interface SiteSection {
+  id: number;
+  title: string;
+  /**
+   * Раздел откроется по адресу frsrk.ru/адрес. Для «О федерации» это about, для «Участникам» participants: их не меняйте.
+   */
+  slug: string;
+  /**
+   * Первый видимый пункт открывается, когда посетитель заходит в раздел.
+   */
+  items?:
+    | {
+        label: string;
+        link?: {
+          type?: ('route' | 'page' | 'url') | null;
+          route?:
+            | (
+                | 'home'
+                | 'calendar'
+                | 'documents'
+                | 'rules'
+                | 'audio'
+                | 'news'
+                | 'media'
+                | 'sections'
+                | 'contacts'
+                | 'participants'
+                | 'coaches'
+                | 'judges'
+                | 'parents'
+                | 'ranking'
+                | 'antidoping'
+                | 'about'
+                | 'leadership'
+                | 'requisites'
+                | 'history'
+                | 'privacy'
+                | 'cookies'
+              )
+            | null;
+          page?: (number | null) | Page;
+          /**
+           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+           */
+          url?: string | null;
+        };
+        hidden?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Если пусто, берётся картинка из «Данные федерации → Полосы заголовков».
+   */
+  banner?: (number | null) | Media;
+  slogan?: string | null;
   published?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -699,6 +891,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'site-sections';
+        value: number | SiteSection;
       } | null)
     | ({
         relationTo: 'galleries';
@@ -1021,8 +1217,95 @@ export interface PeopleSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   key?: T;
+  slug?: T;
+  section?: T;
   lead?: T;
   body?: T;
+  tabs?:
+    | T
+    | {
+        label?: T;
+        hidden?: T;
+        blocks?:
+          | T
+          | {
+              text?:
+                | T
+                | {
+                    content?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+              documents?:
+                | T
+                | {
+                    title?: T;
+                    mode?: T;
+                    category?: T;
+                    documents?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+              buttons?:
+                | T
+                | {
+                    buttons?:
+                      | T
+                      | {
+                          label?: T;
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                route?: T;
+                                page?: T;
+                                url?: T;
+                              };
+                          style?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                    blockName?: T;
+                  };
+              image?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+            };
+        id?: T;
+      };
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-sections_select".
+ */
+export interface SiteSectionsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  items?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              route?: T;
+              page?: T;
+              url?: T;
+            };
+        hidden?: T;
+        id?: T;
+      };
+  banner?: T;
+  slogan?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1123,7 +1406,214 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Название, контакты, реквизиты и ссылки. Они выводятся в шапке, подвале, на странице «Контакты» и в документах.
+ * Логотип, верхнее меню, красная кнопка, соцсети и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-layout".
+ */
+export interface SiteLayout {
+  id: number;
+  showLogo?: boolean | null;
+  /**
+   * Если пусто, показывается герб ФРСРК. Лучше PNG или WebP с прозрачным фоном, высотой от 300 px.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Само название меняется в «Система → Данные федерации».
+   */
+  showName?: boolean | null;
+  /**
+   * Если пусто, надписи нет.
+   */
+  slogan?: string | null;
+  menu?:
+    | {
+        label: string;
+        link?: {
+          type?: ('route' | 'page' | 'url') | null;
+          route?:
+            | (
+                | 'home'
+                | 'calendar'
+                | 'documents'
+                | 'rules'
+                | 'audio'
+                | 'news'
+                | 'media'
+                | 'sections'
+                | 'contacts'
+                | 'participants'
+                | 'coaches'
+                | 'judges'
+                | 'parents'
+                | 'ranking'
+                | 'antidoping'
+                | 'about'
+                | 'leadership'
+                | 'requisites'
+                | 'history'
+                | 'privacy'
+                | 'cookies'
+              )
+            | null;
+          page?: (number | null) | Page;
+          /**
+           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+           */
+          url?: string | null;
+        };
+        hidden?: boolean | null;
+        children?:
+          | {
+              label: string;
+              link?: {
+                type?: ('route' | 'page' | 'url') | null;
+                route?:
+                  | (
+                      | 'home'
+                      | 'calendar'
+                      | 'documents'
+                      | 'rules'
+                      | 'audio'
+                      | 'news'
+                      | 'media'
+                      | 'sections'
+                      | 'contacts'
+                      | 'participants'
+                      | 'coaches'
+                      | 'judges'
+                      | 'parents'
+                      | 'ranking'
+                      | 'antidoping'
+                      | 'about'
+                      | 'leadership'
+                      | 'requisites'
+                      | 'history'
+                      | 'privacy'
+                      | 'cookies'
+                    )
+                  | null;
+                page?: (number | null) | Page;
+                /**
+                 * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                 */
+                url?: string | null;
+              };
+              hidden?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  cta?: {
+    show?: boolean | null;
+    label?: string | null;
+    link?: {
+      type?: ('route' | 'page' | 'url') | null;
+      route?:
+        | (
+            | 'home'
+            | 'calendar'
+            | 'documents'
+            | 'rules'
+            | 'audio'
+            | 'news'
+            | 'media'
+            | 'sections'
+            | 'contacts'
+            | 'participants'
+            | 'coaches'
+            | 'judges'
+            | 'parents'
+            | 'ranking'
+            | 'antidoping'
+            | 'about'
+            | 'leadership'
+            | 'requisites'
+            | 'history'
+            | 'privacy'
+            | 'cookies'
+          )
+        | null;
+      page?: (number | null) | Page;
+      /**
+       * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+       */
+      url?: string | null;
+    };
+  };
+  /**
+   * Значки в шапке, в мобильном меню и на странице «Контакты».
+   */
+  socials?:
+    | {
+        network: 'vk' | 'telegram' | 'youtube' | 'other';
+        /**
+         * Например, «Сообщество федерации». Показывается на странице «Контакты» и читается программами для незрячих.
+         */
+        label?: string | null;
+        url: string;
+        /**
+         * Квадратная картинка PNG, WebP или SVG. Если пусто, будет значок ссылки.
+         */
+        icon?: (number | null) | Media;
+        hidden?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  footerColumns?:
+    | {
+        title: string;
+        hidden?: boolean | null;
+        links?:
+          | {
+              label: string;
+              link?: {
+                type?: ('route' | 'page' | 'url') | null;
+                route?:
+                  | (
+                      | 'home'
+                      | 'calendar'
+                      | 'documents'
+                      | 'rules'
+                      | 'audio'
+                      | 'news'
+                      | 'media'
+                      | 'sections'
+                      | 'contacts'
+                      | 'participants'
+                      | 'coaches'
+                      | 'judges'
+                      | 'parents'
+                      | 'ranking'
+                      | 'antidoping'
+                      | 'about'
+                      | 'leadership'
+                      | 'requisites'
+                      | 'history'
+                      | 'privacy'
+                      | 'cookies'
+                    )
+                  | null;
+                page?: (number | null) | Page;
+                /**
+                 * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                 */
+                url?: string | null;
+              };
+              hidden?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Название, контакты и реквизиты. Они выводятся в шапке, подвале, на странице «Контакты» и в документах. Соцсети, логотип и меню: «Структура сайта → Шапка, меню и подвал».
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
@@ -1173,8 +1663,6 @@ export interface SiteSetting {
   phone?: string | null;
   email?: string | null;
   address?: string | null;
-  vk?: string | null;
-  telegram?: string | null;
   ogrn?: string | null;
   inn?: string | null;
   kpp?: string | null;
@@ -1190,6 +1678,95 @@ export interface SiteSetting {
   notifyEmail?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-layout_select".
+ */
+export interface SiteLayoutSelect<T extends boolean = true> {
+  showLogo?: T;
+  logo?: T;
+  showName?: T;
+  slogan?: T;
+  menu?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              route?: T;
+              page?: T;
+              url?: T;
+            };
+        hidden?: T;
+        children?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    route?: T;
+                    page?: T;
+                    url?: T;
+                  };
+              hidden?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        show?: T;
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              route?: T;
+              page?: T;
+              url?: T;
+            };
+      };
+  socials?:
+    | T
+    | {
+        network?: T;
+        label?: T;
+        url?: T;
+        icon?: T;
+        hidden?: T;
+        id?: T;
+      };
+  footerColumns?:
+    | T
+    | {
+        title?: T;
+        hidden?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    route?: T;
+                    page?: T;
+                    url?: T;
+                  };
+              hidden?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1223,8 +1800,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   phone?: T;
   email?: T;
   address?: T;
-  vk?: T;
-  telegram?: T;
   ogrn?: T;
   inn?: T;
   kpp?: T;

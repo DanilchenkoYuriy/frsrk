@@ -29,3 +29,33 @@ export const ICONS: Record<string, ReactElement> = {
   flag: stroke("M6 21V4M6 4h12l-3 4 3 4H6"),
   calendar: stroke("M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM3 9h18M8 2v4M16 2v4"),
 };
+
+export const YoutubeIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z" />
+  </svg>
+);
+
+const LinkIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" style={{ fill: "none" }} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+  </svg>
+);
+
+/** Соцсеть из админки, уже с готовым адресом иконки. */
+export interface SocialLink {
+  network: string;
+  label: string;
+  url: string;
+  iconUrl?: string | null;
+}
+
+/** Значок соцсети: встроенный или загруженный в админке. */
+export function SocialIcon({ network, iconUrl }: Pick<SocialLink, "network" | "iconUrl">) {
+  if (network === "vk") return <VkIcon />;
+  if (network === "telegram") return <TelegramIcon />;
+  if (network === "youtube") return <YoutubeIcon />;
+  // eslint-disable-next-line @next/next/no-img-element
+  if (iconUrl) return <img src={iconUrl} alt="" width={22} height={22} />;
+  return <LinkIcon />;
+}

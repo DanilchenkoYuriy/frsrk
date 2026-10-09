@@ -111,3 +111,60 @@ export const GENDERS = [
   { value: "female", label: "Девочки, девушки, женщины" },
   { value: "male", label: "Мальчики, юноши, мужчины" },
 ] as const;
+
+/** Встроенные страницы сайта: их можно выбрать в меню и ссылках, не вписывая адрес вручную. */
+export const SITE_ROUTES = [
+  { value: "home", label: "Главная", href: "/" },
+  { value: "calendar", label: "Календарь", href: "/calendar" },
+  { value: "documents", label: "Документы", href: "/documents" },
+  { value: "rules", label: "Документы → Правила вида спорта", href: "/documents/rules" },
+  { value: "audio", label: "Документы → Музыка для соревнований", href: "/documents/audio" },
+  { value: "news", label: "Новости", href: "/news" },
+  { value: "media", label: "Медиа", href: "/media" },
+  { value: "sections", label: "Найти секцию", href: "/sections" },
+  { value: "contacts", label: "Контакты", href: "/contacts" },
+  { value: "participants", label: "Участникам", href: "/participants" },
+  { value: "coaches", label: "Участникам → Тренерам", href: "/participants/coaches" },
+  { value: "judges", label: "Участникам → Судьям", href: "/participants/judges" },
+  { value: "parents", label: "Участникам → Родителям", href: "/participants/parents" },
+  { value: "ranking", label: "Участникам → Рейтинг спортсменов", href: "/participants/ranking" },
+  { value: "antidoping", label: "Участникам → Антидопинг", href: "/participants/antidoping" },
+  { value: "about", label: "О федерации", href: "/about" },
+  { value: "leadership", label: "О федерации → Руководство", href: "/about/leadership" },
+  { value: "requisites", label: "О федерации → Реквизиты", href: "/about/requisites" },
+  { value: "history", label: "О федерации → История", href: "/about/history" },
+  { value: "privacy", label: "Политика обработки персональных данных", href: "/legal/privacy" },
+  { value: "cookies", label: "Файлы cookie", href: "/legal/cookies" },
+] as const;
+
+export type SiteRoute = (typeof SITE_ROUTES)[number]["value"];
+
+export const routeHref = (value: string | null | undefined): string | null => SITE_ROUTES.find((r) => r.value === value)?.href ?? null;
+
+/** Адреса встроенных текстовых страниц (поле «Встроенная страница» у текстовых страниц). */
+export const PAGE_KEY_HREF: Record<string, string> = {
+  about: "/about",
+  history: "/about/history",
+  parents: "/participants/parents",
+  antidoping: "/participants/antidoping",
+  rules: "/documents/rules",
+  "education-judges": "/participants/judges",
+  "education-coaches": "/participants/coaches",
+  leadership: "/about/leadership",
+  privacy: "/legal/privacy",
+  cookies: "/legal/cookies",
+  media: "/media",
+};
+
+/** Первые части адреса, которые уже заняты сайтом. Раздел «О федерации» и «Участникам» можно, остальные нельзя. */
+export const RESERVED_SLUGS = ["admin", "api", "calendar", "documents", "news", "media", "sections", "contacts", "legal", "brand", "fonts", "robots.txt", "sitemap.xml", "favicon.ico"] as const;
+
+/** Вторые части адреса, уже занятые встроенными страницами внутри разделов. */
+export const RESERVED_SUBSLUGS = ["coaches", "judges", "parents", "ranking", "antidoping", "leadership", "requisites", "history", "rules", "audio", "privacy", "cookies", "photos"] as const;
+
+export const SOCIAL_NETWORKS = [
+  { value: "vk", label: "ВКонтакте" },
+  { value: "telegram", label: "Telegram" },
+  { value: "youtube", label: "YouTube" },
+  { value: "other", label: "Другая (своя иконка)" },
+] as const;

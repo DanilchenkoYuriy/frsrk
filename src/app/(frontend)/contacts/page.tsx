@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getSettings } from "@/lib/cms";
+import { SOCIAL_NETWORKS } from "@/lib/constants";
+import { getSiteLayout } from "@/lib/layout";
 import { telHref } from "@/lib/site";
 import { PageHead } from "@/components/ui/PageHead";
 import { SLOGANS } from "@/config/slogans";
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactsPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
-  const [{ topic }, s] = await Promise.all([searchParams, getSettings()]);
+  const [{ topic }, s, { socials }] = await Promise.all([searchParams, getSettings(), getSiteLayout()]);
   return (
     <>
       <PageHead banner="contacts" slogan={SLOGANS.contacts} title="Контакты" lead="Напишите нам или позвоните. Отвечаем на вопросы о занятиях, соревнованиях, судействе и открытии секций." crumbs={[{ label: "Контакты" }]} />
@@ -54,26 +56,20 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
                     </dd>
                   </div>
                 ) : null}
-                {s.vk ? (
-                  <div>
-                    <dt>ВКонтакте</dt>
-                    <dd>
-                      <a href={s.vk} target="_blank" rel="noopener noreferrer">
-                        Сообщество федерации
-                      </a>
-                    </dd>
-                  </div>
-                ) : null}
-                {s.telegram ? (
-                  <div>
-                    <dt>Telegram</dt>
-                    <dd>
-                      <a href={s.telegram} target="_blank" rel="noopener noreferrer">
-                        Канал федерации
-                      </a>
-                    </dd>
-                  </div>
-                ) : null}
+                {socials.map((social) => {
+                  // У встроенных соцсетей заголовок — название сети, у своих — подпись из админки, а в ссылке сам адрес
+                  const network = social.network === "other" ? null : SOCIAL_NETWORKS.find((n) => n.value === social.network)?.label;
+                  return (
+                    <div key={social.url}>
+                      <dt>{network ?? social.label}</dt>
+                      <dd>
+                        <a href={social.url} target="_blank" rel="noopener noreferrer">
+                          {network ? social.label : social.url.replace(/^https?:\/\//, "")}
+                        </a>
+                      </dd>
+                    </div>
+                  );
+                })}
               </dl>
             </div>
           </aside>
