@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAudioTracks, getDocuments, getEvents, getGalleries, getMunicipalities, getNews, getSections, getSettings, populated, type Event, type Media, type Municipality, type Video } from "@/lib/cms";
+import { getAudioTracks, getDocuments, getEvents, getGalleries, getMunicipalities, getNews, getLayout, getSections, getSettings, populated, type Event, type Media, type Municipality, type Video } from "@/lib/cms";
 import { EVENT_STATUS_LABELS, eventStatus, todayIso } from "@/lib/status";
 import { EVENT_LEVELS, EVENT_TYPES, labelOf } from "@/lib/constants";
 import { dayAndMonth, formatDate, formatRange } from "@/lib/dates";
@@ -62,7 +62,7 @@ function EventDone({ e, today }: { e: Event; today: string }) {
 
 export default async function HomePage() {
   const today = todayIso();
-  const [settings, events, municipalities, sections, news, documents, audio, galleries] = await Promise.all([
+  const [settings, events, municipalities, sections, news, documents, audio, galleries, layout] = await Promise.all([
     getSettings(),
     getEvents(),
     getMunicipalities(),
@@ -71,13 +71,23 @@ export default async function HomePage() {
     getDocuments(),
     getAudioTracks(),
     getGalleries(),
+    getLayout(),
   ]);
 
   const upcoming = events.filter((e) => eventStatus(e, today) !== "finished").sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
   const recent = events.filter((e) => eventStatus(e, today) === "finished").sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
-  const featured = upcoming[0];
-  const nextUpcoming = upcoming[1];
-  const lastDone = recent[0];
+  // Мероприятия на главной: сами (ближайшие и последнее прошедшее) или выбранные в админке
+  const home = layout.homeEvents;
+  const pick = (ref: number | Event | null | undefined) => {
+    const id = ref && typeof ref === "object" ? ref.id : ref;
+    return events.find((e) => e.id === id);
+  };
+  const manual = home?.mode === "manual";
+  const featured = manual ? pick(home?.featured) : upcoming[0];
+  const sideEvents = manual ? (home?.side ?? []).map(pick).filter((e): e is Event => Boolean(e) && e !== featured) : upcoming.slice(1, 2);
+  const lastDone = manual ? pick(home?.recent) : recent[0];
+  const featuredImage = populated<Media>(home?.image);
+  const eventsTitle = home?.title?.trim() || (manual || upcoming.length ? "Ближайшие мероприятия" : "Недавние мероприятия");
 
   const counts = new Map<string, number>();
   for (const s of sections) {
@@ -154,14 +164,14 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {upcoming.length > 0 || recent.length > 0 ? (
+      {featured || sideEvents.length > 0 || lastDone ? (
         <section className="block" aria-labelledby="events-title">
           <div className="container">
             <div className="block__head">
               <div>
                 <p className="kicker">Календарь</p>
                 <h2 className="block__title" id="events-title">
-                  {upcoming.length ? "Ближайшие мероприятия" : "Недавние мероприятия"}
+                  {eventsTitle}
                 </h2>
               </div>
               <Link href="/calendar" className="more">
@@ -170,7 +180,12 @@ export default async function HomePage() {
             </div>
             <div className={featured ? "events-home" : undefined}>
               {featured ? (
-                <Link href={`/calendar/${featured.slug}`} className="feature">
+                <Link href={`/calendar/${featured.slug}`} className={`feature${featuredImage ? " feature--photo" : ""}`}>
+                  {featuredImage ? (
+                    <span className="feature__media" aria-hidden="true">
+                      <Picture media={featuredImage} alt="" sizes="(max-width: 900px) 100vw, 60vw" />
+                    </span>
+                  ) : null}
                   <span className="feature__date">{formatRange(featured.dateFrom, featured.dateTo)}</span>
                   <h3 className="feature__title">{featured.title}</h3>
                   <p className="feature__meta">
@@ -179,11 +194,13 @@ export default async function HomePage() {
                   <span className="feature__go">Подробнее</span>
                 </Link>
               ) : null}
-              {nextUpcoming || lastDone ? (
+              {sideEvents.length || lastDone ? (
                 <div className="events-home__side">
-                  {nextUpcoming ? (
+                  {sideEvents.length ? (
                     <div className="ev-list">
-                      <EventRowHome e={nextUpcoming} today={today} />
+                      {sideEvents.map((e) => (
+                        <EventRowHome key={e.id} e={e} today={today} />
+                      ))}
                     </div>
                   ) : null}
                   {lastDone ? (

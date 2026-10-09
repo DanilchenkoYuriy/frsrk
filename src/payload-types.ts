@@ -1406,7 +1406,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Логотип, верхнее меню, красная кнопка, соцсети и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.
+ * Логотип, верхнее меню, красная кнопка, соцсети, мероприятия на главной и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-layout".
@@ -1562,6 +1562,26 @@ export interface SiteLayout {
         id?: string | null;
       }[]
     | null;
+  homeEvents?: {
+    /**
+     * Если пусто: «Ближайшие мероприятия».
+     */
+    title?: string | null;
+    mode?: ('auto' | 'manual') | null;
+    featured?: (number | null) | Event;
+    /**
+     * Одно или два мероприятия. Можно оставить пустым.
+     */
+    side?: (number | Event)[] | null;
+    /**
+     * Если пусто, этого блока не будет.
+     */
+    recent?: (number | null) | Event;
+    /**
+     * Горизонтальная фотография. Поверх неё будет затемнение, чтобы текст читался. Если пусто, блок синий, как сейчас.
+     */
+    image?: (number | null) | Media;
+  };
   footerColumns?:
     | {
         title: string;
@@ -1741,6 +1761,16 @@ export interface SiteLayoutSelect<T extends boolean = true> {
         icon?: T;
         hidden?: T;
         id?: T;
+      };
+  homeEvents?:
+    | T
+    | {
+        title?: T;
+        mode?: T;
+        featured?: T;
+        side?: T;
+        recent?: T;
+        image?: T;
       };
   footerColumns?:
     | T

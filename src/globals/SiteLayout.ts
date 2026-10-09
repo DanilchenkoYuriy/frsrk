@@ -8,10 +8,10 @@ const hidden: Field = { name: "hidden", type: "checkbox", label: "Скрыть �
 
 export const SiteLayout: GlobalConfig = {
   slug: "site-layout",
-  label: "Шапка, меню и подвал",
+  label: "Шапка, меню, главная и подвал",
   admin: {
     group: "Структура сайта",
-    description: "Логотип, верхнее меню, красная кнопка, соцсети и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.",
+    description: "Логотип, верхнее меню, красная кнопка, соцсети, мероприятия на главной и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.",
   },
   access: { read: () => true, update: isStaff },
   hooks: { afterChange: [revalidateGlobal] },
@@ -108,6 +108,59 @@ export const SiteLayout: GlobalConfig = {
                   admin: { condition: (_, sibling) => sibling?.network === "other", description: "Квадратная картинка PNG, WebP или SVG. Если пусто, будет значок ссылки." },
                 },
                 hidden,
+              ],
+            },
+          ],
+        },
+        {
+          label: "Главная страница",
+          description: "Блок «Ближайшие мероприятия» на главной: большой блок слева, мероприятия справа и «Недавно прошло».",
+          fields: [
+            {
+              name: "homeEvents",
+              type: "group",
+              label: "Мероприятия на главной",
+              fields: [
+                { name: "title", type: "text", label: "Заголовок блока", admin: { description: "Если пусто: «Ближайшие мероприятия»." } },
+                {
+                  name: "mode",
+                  type: "radio",
+                  label: "Какие мероприятия показывать",
+                  defaultValue: "auto",
+                  options: [
+                    { label: "Автоматически: ближайшие и последнее прошедшее", value: "auto" },
+                    { label: "Выбрать вручную", value: "manual" },
+                  ],
+                },
+                {
+                  name: "featured",
+                  type: "relationship",
+                  relationTo: "events",
+                  label: "Большой блок слева",
+                  admin: { condition: (_, sibling) => sibling?.mode === "manual" },
+                },
+                {
+                  name: "side",
+                  type: "relationship",
+                  relationTo: "events",
+                  hasMany: true,
+                  label: "Справа сверху",
+                  admin: { condition: (_, sibling) => sibling?.mode === "manual", description: "Одно или два мероприятия. Можно оставить пустым." },
+                },
+                {
+                  name: "recent",
+                  type: "relationship",
+                  relationTo: "events",
+                  label: "«Недавно прошло»",
+                  admin: { condition: (_, sibling) => sibling?.mode === "manual", description: "Если пусто, этого блока не будет." },
+                },
+                {
+                  name: "image",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "Фото в большом блоке слева",
+                  admin: { description: "Горизонтальная фотография. Поверх неё будет затемнение, чтобы текст читался. Если пусто, блок синий, как сейчас." },
+                },
               ],
             },
           ],
