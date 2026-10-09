@@ -1,27 +1,11 @@
-import Link from "next/link";
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
+import { SLOGANS } from "@/config/slogans";
 
-export const generateMetadata = () => textPageMetadata("parents", "Родителям");
+const fallback = { title: "Родителям", slogan: SLOGANS.parents };
 
+export const generateMetadata = () => pageMetadata("parents", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
 export default function ParentsPage() {
-  return (
-    <TextPage
-      pageKey="parents"
-      fallbackTitle="Родителям"
-      section={{ key: "participants", href: "/participants/parents" }}
-      after={
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 32 }}>
-          <Link href="/sections" className="btn btn--red">
-            Найти секцию рядом
-          </Link>
-          <Link href="/documents?category=classification" className="btn btn--line">
-            Разряды и ЕВСК
-          </Link>
-          <Link href="/participants/antidoping" className="btn btn--line">
-            Антидопинг
-          </Link>
-        </div>
-      }
-    />
-  );
+  return <PageView kind="parents" banner="participants" fallback={fallback} />;
 }

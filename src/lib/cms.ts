@@ -16,11 +16,10 @@ import type {
   RankingEntry,
   Section,
   SiteLayout,
-  SiteSection,
   SiteSetting,
   Video,
 } from "@/payload-types";
-import type { DocumentCategory } from "@/lib/constants";
+import type { DocumentCategory, PageKind } from "@/lib/constants";
 
 export type {
   AudioTrack,
@@ -35,7 +34,6 @@ export type {
   RankingEntry,
   Section,
   SiteLayout,
-  SiteSection,
   SiteSetting,
   Video,
 };
@@ -55,40 +53,30 @@ export const getSettings = cached("settings", async (): Promise<SiteSetting> => 
   return p.findGlobal({ slug: "site-settings", depth: 1, ...publicRead });
 });
 
-/** Шапка, меню, соцсети и подвал. Глубина 2: у ссылок на страницы нужен их раздел, чтобы собрать адрес. */
+/** Шапка, соцсети и подвал. Адреса страниц в ссылках собираются по дереву страниц (src/lib/tree.ts). */
 export const getLayout = cached("layout", async (): Promise<SiteLayout> => {
   const p = await payload();
-  return p.findGlobal({ slug: "site-layout", depth: 2, ...publicRead });
+  return p.findGlobal({ slug: "site-layout", depth: 1, ...publicRead });
 });
 
-export const getSiteSection = cached("site-section", async (slug: string): Promise<SiteSection | null> => {
+/** Все страницы для дерева, меню и адресов. Без связей, это лёгкий запрос. */
+export const getPagesIndex = cached("pages-index", async (): Promise<Page[]> => {
   const p = await payload();
-  const res = await p.find({ collection: "site-sections", where: { slug: { equals: slug } }, limit: 1, depth: 2, ...publicRead });
-  return res.docs[0] ?? null;
-});
-
-export const getSiteSections = cached("site-sections", async (): Promise<SiteSection[]> => {
-  const p = await payload();
-  const res = await p.find({ collection: "site-sections", limit: 100, depth: 2, ...publicRead });
+  // Берутся и скрытые страницы: без них не собрать адреса вложенных. Наружу скрытые не попадают, меню их отбрасывает.
+  const res = await p.find({ collection: "pages", sort: "_order", limit: 500, depth: 0, pagination: false, overrideAccess: true });
   return res.docs;
 });
 
-/** Новые страницы, созданные в админке (без встроенного ключа). */
-export const getCustomPages = cached("custom-pages", async (): Promise<Page[]> => {
+/** Страница целиком, со связанными картинками, документами и мероприятиями внутри блоков. */
+export const getPageById = cached("page-by-id", async (id: number): Promise<Page | null> => {
   const p = await payload();
-  const res = await p.find({ collection: "pages", where: { key: { exists: false } }, limit: 500, depth: 1, ...publicRead });
-  return res.docs;
-});
-
-export const getPageBySlug = cached("page-by-slug", async (slug: string): Promise<Page | null> => {
-  const p = await payload();
-  const res = await p.find({ collection: "pages", where: { and: [{ slug: { equals: slug } }, { key: { exists: false } }] }, limit: 1, depth: 2, ...publicRead });
+  const res = await p.find({ collection: "pages", where: { id: { equals: id } }, limit: 1, depth: 2, ...publicRead });
   return res.docs[0] ?? null;
 });
 
-export const getPage = cached("page", async (key: NonNullable<Page["key"]>): Promise<Page | null> => {
+export const getPage = cached("page", async (kind: PageKind): Promise<Page | null> => {
   const p = await payload();
-  const res = await p.find({ collection: "pages", where: { key: { equals: key } }, limit: 1, depth: 2, ...publicRead });
+  const res = await p.find({ collection: "pages", where: { kind: { equals: kind } }, limit: 1, depth: 2, ...publicRead });
   return res.docs[0] ?? null;
 });
 

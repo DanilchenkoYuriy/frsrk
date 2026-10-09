@@ -1,7 +1,10 @@
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 
-export const generateMetadata = () => textPageMetadata("privacy", "Политика обработки персональных данных");
+const fallback = { title: "Политика обработки персональных данных" };
 
+export const generateMetadata = () => pageMetadata("privacy", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
 export default function PrivacyPage() {
-  return <TextPage pageKey="privacy" fallbackTitle="Политика обработки персональных данных" tabs={false} />;
+  return <PageView kind="privacy" fallback={fallback} />;
 }

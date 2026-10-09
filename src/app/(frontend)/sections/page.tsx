@@ -1,15 +1,11 @@
-import type { Metadata } from "next";
 import { getMunicipalities, getSections, populated, type Municipality, type Person } from "@/lib/cms";
 import { DISCIPLINES, labelOf, MUNICIPALITY_KINDS } from "@/lib/constants";
 import { telHref } from "@/lib/site";
-import { PageHead } from "@/components/ui/PageHead";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { SLOGANS } from "@/config/slogans";
 import { SectionsFinder, type MunicipalityView, type SectionView } from "@/components/sections/SectionsFinder";
 
-export const metadata: Metadata = {
-  title: "Найти секцию",
-  description: "Секции по роуп скиппингу (спортивной скакалке) в муниципальных образованиях Республики Крым: адреса, тренеры, расписание.",
-};
+export const generateMetadata = () => pageMetadata("sections", { title: "Найти секцию", description: "Секции по роуп скиппингу (спортивной скакалке) в муниципальных образованиях Республики Крым: адреса, тренеры, расписание." });
 
 export default async function SectionsPage({ searchParams }: { searchParams: Promise<{ city?: string }> }) {
   const { city } = await searchParams;
@@ -51,13 +47,15 @@ export default async function SectionsPage({ searchParams }: { searchParams: Pro
   });
 
   return (
-    <>
-      <PageHead banner="sections" slogan={SLOGANS.sections} title="Найти секцию" lead="Выберите муниципальное образование на карте или найдите секцию через поиск. В карточке есть телефон тренера и маршрут." crumbs={[{ label: "Найти секцию" }]} />
-      <div className="page">
-        <div className="container">
-          <SectionsFinder municipalities={items} sections={views} initialCity={city ?? null} />
-        </div>
-      </div>
-    </>
+      <PageView
+        kind="sections"
+        banner="sections"
+        fallback={{ title: "Найти секцию", lead: "Выберите муниципальное образование на карте или найдите секцию через поиск. В карточке есть телефон тренера и маршрут.", slogan: SLOGANS.sections }}
+        builtin={
+          <>
+      <SectionsFinder municipalities={items} sections={views} initialCity={city ?? null} />
+          </>
+        }
+      />
   );
 }

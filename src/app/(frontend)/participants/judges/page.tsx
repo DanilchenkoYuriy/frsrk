@@ -1,30 +1,11 @@
-import { getDocuments } from "@/lib/cms";
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
-import { DocumentRow } from "@/components/documents/DocumentRow";
+import { PageView, pageMetadata } from "@/components/page/PageView";
+import { SLOGANS } from "@/config/slogans";
 
-export const generateMetadata = () => textPageMetadata("education-judges", "Судьям");
+const fallback = { title: "Судьям", slogan: SLOGANS.judges };
 
-export default async function JudgesPage() {
-  const docs = (await getDocuments()).filter((d) => d.category === "rules");
-  return (
-    <TextPage
-      pageKey="education-judges"
-      fallbackTitle="Судьям"
-      section={{ key: "participants", href: "/participants/judges" }}
-      after={
-        docs.length > 0 ? (
-          <section style={{ marginTop: 40 }} aria-labelledby="j-docs">
-            <h2 className="h3" id="j-docs">
-              Правила и положения о судействе
-            </h2>
-            <ul>
-              {docs.map((d) => (
-                <DocumentRow key={d.id} doc={d} />
-              ))}
-            </ul>
-          </section>
-        ) : null
-      }
-    />
-  );
+export const generateMetadata = () => pageMetadata("judges", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
+export default function JudgesPage() {
+  return <PageView kind="judges" banner="participants" fallback={fallback} />;
 }

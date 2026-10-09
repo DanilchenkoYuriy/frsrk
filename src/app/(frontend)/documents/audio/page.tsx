@@ -1,19 +1,21 @@
-import type { Metadata } from "next";
 import { getAudioTracks } from "@/lib/cms";
 import { SLOGANS } from "@/config/slogans";
-import { DocumentsPage } from "@/components/documents/DocumentsPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { fileSize } from "@/components/documents/DocumentRow";
 import { Empty } from "@/components/ui/Wip";
 
-export const metadata: Metadata = {
-  title: "Музыка для соревнований",
-  description: "Звуковые дорожки для дисциплин роуп скиппинга: слушать онлайн и скачать в формате MP3.",
-};
+export const generateMetadata = () => pageMetadata("audio", { title: "Музыка для соревнований", description: "Звуковые дорожки для дисциплин роуп скиппинга: слушать онлайн и скачать в формате MP3." });
 
 export default async function AudioPage() {
   const tracks = (await getAudioTracks()).filter((t) => t.url);
   return (
-    <DocumentsPage active="audio" title="Музыка для соревнований" lead="Звуковые дорожки для дисциплин. Послушайте здесь или скачайте файл на телефон." slogan={SLOGANS.audio} crumbLabel="Музыка">
+    <PageView
+      kind="audio"
+      banner="documents"
+      fallback={{ title: "Музыка для соревнований", lead: "Звуковые дорожки для дисциплин. Послушайте здесь или скачайте файл на телефон.", slogan: SLOGANS.audio }}
+      documents={{ active: "/documents/audio" }}
+      builtin={
+        <>
       {tracks.length === 0 ? (
         <Empty>Звуковые дорожки пока не опубликованы.</Empty>
       ) : (
@@ -31,6 +33,8 @@ export default async function AudioPage() {
           ))}
         </ul>
       )}
-    </DocumentsPage>
+        </>
+      }
+    />
   );
 }

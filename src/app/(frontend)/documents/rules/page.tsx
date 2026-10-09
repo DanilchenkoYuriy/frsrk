@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
 import { getDocuments, getPage } from "@/lib/cms";
 import { DISCIPLINE_CARDS } from "@/config/disciplines";
 import { SLOGANS } from "@/config/slogans";
-import { DocumentsPage } from "@/components/documents/DocumentsPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { extensionOf, fileSize } from "@/components/documents/DocumentRow";
 import { RichText, hasContent, splitByHeading } from "@/components/ui/RichText";
 import { Tabs } from "@/components/ui/Tabs";
 import { Wip } from "@/components/ui/Wip";
 
-export const metadata: Metadata = {
-  title: "Правила вида спорта",
-  description: "Правила вида спорта «роуп скиппинг (спортивная скакалка)», утверждённые приказом Минспорта России № 264 от 29 марта 2022 года.",
-};
+export const generateMetadata = () => pageMetadata("rules", { title: "Правила вида спорта", description: "Правила вида спорта «роуп скиппинг (спортивная скакалка)», утверждённые приказом Минспорта России № 264 от 29 марта 2022 года." });
 
 /** Короткие названия вкладок для разделов правил */
 const SHORT: Record<string, string> = {
@@ -27,8 +23,11 @@ const SHORT: Record<string, string> = {
 export default async function RulesPage() {
   const [docs, page] = await Promise.all([getDocuments(), getPage("rules")]);
   const file = docs.find((d) => d.category === "rules" && d.number === "264" && d.url);
-  const filled = Boolean(page && hasContent(page.body as never));
-  const { intro, sections } = filled ? splitByHeading(page!.body) : { intro: null, sections: [] };
+  // Текст правил хранится в блоке «Основное содержимое страницы» у страницы «Правила вида спорта»
+  const builtin = page?.layout?.find((b) => b.blockType === "builtin");
+  const text = builtin?.blockType === "builtin" ? builtin.content : null;
+  const filled = hasContent(text as never);
+  const { intro, sections } = filled ? splitByHeading(text) : { intro: null, sections: [] };
 
   const disciplines = (
     <div>
@@ -66,7 +65,13 @@ export default async function RulesPage() {
   ];
 
   return (
-    <DocumentsPage active="rules-text" title="Правила вида спорта" lead="Правила вида спорта «роуп скиппинг (спортивная скакалка)»." slogan={SLOGANS.rules} crumbLabel="Правила вида спорта">
+    <PageView
+      kind="rules"
+      banner="documents"
+      fallback={{ title: "Правила вида спорта", lead: "Правила вида спорта «роуп скиппинг (спортивная скакалка)».", slogan: SLOGANS.rules }}
+      documents={{ active: "/documents/rules" }}
+      builtin={
+        <>
       <div className="rules-file">
         <div>
           <p className="rules-file__label">Приказ Минспорта России</p>
@@ -91,6 +96,8 @@ export default async function RulesPage() {
           <div style={{ marginTop: 28 }}>{disciplines}</div>
         </>
       )}
-    </DocumentsPage>
+        </>
+      }
+    />
   );
 }

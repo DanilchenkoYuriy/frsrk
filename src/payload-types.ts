@@ -78,7 +78,6 @@ export interface Config {
     sections: Section;
     people: Person;
     pages: Page;
-    'site-sections': SiteSection;
     galleries: Gallery;
     'ranking-entries': RankingEntry;
     inquiries: Inquiry;
@@ -100,7 +99,6 @@ export interface Config {
     sections: SectionsSelect<false> | SectionsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
-    'site-sections': SiteSectionsSelect<false> | SiteSectionsSelect<true>;
     galleries: GalleriesSelect<false> | GalleriesSelect<true>;
     'ranking-entries': RankingEntriesSelect<false> | RankingEntriesSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
@@ -193,6 +191,8 @@ export interface Media {
   alt: string;
   caption?: string | null;
   credit?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -250,6 +250,8 @@ export interface Document {
    * Включите, когда документ проверен. Документы со списками детей публикуйте только при согласии родителей.
    */
   published?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -274,6 +276,8 @@ export interface AudioTrack {
   durationLabel?: string | null;
   order?: number | null;
   published?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -301,9 +305,11 @@ export interface Video {
   description?: string | null;
   published?: boolean | null;
   /**
-   * Снимите, если видео нужно только для первого экрана главной.
+   * Снимите, если видео нужно только для первого экрана главной (блок «Первый экран» в «Страницы сайта → Главная»).
    */
   inGallery?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -521,231 +527,784 @@ export interface Section {
   createdAt: string;
 }
 /**
- * Тексты разделов («О федерации», «Родителям», «Антидопинг» и другие) и новые страницы. Новая страница: заполните заголовок, адрес и раздел, затем добавьте её в меню («Структура сайта»). Пока текст пустой, на сайте написано, что раздел в разработке.
+ * Все страницы сайта. Порядок в списке и есть порядок в меню: перетаскивайте строки за значок слева. Страница с «Родительской страницей» становится пунктом меню слева внутри раздела. Откройте страницу, чтобы менять её блоки.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: number;
-  title: string;
-  /**
-   * Только для стандартных страниц сайта. У новой страницы оставьте пустым.
-   */
-  key?:
+  _order?: string | null;
+  layout?:
     | (
-        | 'about'
-        | 'history'
-        | 'parents'
-        | 'antidoping'
-        | 'rules'
-        | 'education-judges'
-        | 'education-coaches'
-        | 'leadership'
-        | 'privacy'
-        | 'cookies'
-        | 'media'
-      )
-    | null;
-  /**
-   * Если пусто, адрес сделается из заголовка.
-   */
-  slug?: string | null;
-  /**
-   * Страница откроется внутри раздела, по адресу frsrk.ru/раздел/адрес. Не забудьте добавить её в пункты слева у раздела.
-   */
-  section?: (number | null) | SiteSection;
-  lead?: string | null;
-  /**
-   * Если ниже нет вкладок, а в тексте три и больше заголовков второго уровня, текст сам делится на вкладки по этим заголовкам.
-   */
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Вкладки идут под текстом страницы. В каждой вкладке можно собрать блоки: текст, список документов, кнопки, картинку. Если вкладка одна, заголовков вкладок не будет, только её блоки.
-   */
-  tabs?:
-    | {
-        label: string;
-        hidden?: boolean | null;
-        blocks?:
-          | (
+        | {
+            title: string;
+            lead?: string | null;
+            mode?: ('photo' | 'video') | null;
+            /**
+             * Оно же показывается, пока грузится видео.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Загруженный файл MP4 из «Видео». Лучше ролик 10–20 секунд, 1920×1080, до 8 МБ. Звука на сайте нет.
+             */
+            video?: (number | null) | Video;
+            /**
+             * По умолчанию на телефонах фото, чтобы не тратить мобильный трафик посетителей.
+             */
+            videoMobile?: boolean | null;
+            buttons?:
               | {
-                  content: {
-                    root: {
-                      type: string;
-                      children: {
-                        type: any;
-                        version: number;
-                        [k: string]: unknown;
-                      }[];
-                      direction: ('ltr' | 'rtl') | null;
-                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                      indent: number;
-                      version: number;
-                    };
-                    [k: string]: unknown;
+                  label: string;
+                  link?: {
+                    type?: ('page' | 'route' | 'url') | null;
+                    route?:
+                      | (
+                          | 'home'
+                          | 'calendar'
+                          | 'documents'
+                          | 'rules'
+                          | 'audio'
+                          | 'news'
+                          | 'media'
+                          | 'sections'
+                          | 'contacts'
+                          | 'participants'
+                          | 'coaches'
+                          | 'judges'
+                          | 'parents'
+                          | 'ranking'
+                          | 'antidoping'
+                          | 'about'
+                          | 'leadership'
+                          | 'requisites'
+                          | 'history'
+                          | 'privacy'
+                          | 'cookies'
+                        )
+                      | null;
+                    page?: (number | null) | Page;
+                    /**
+                     * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                     */
+                    url?: string | null;
+                  };
+                  style?: ('red' | 'light') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Если в тексте три и больше заголовков второго уровня, каждый станет отдельной вкладкой.
+             */
+            splitTabs?: boolean | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            image: number | Media;
+            imageSide?: ('right' | 'left') | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textImage';
+          }
+        | {
+            image: number | Media;
+            caption?: string | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            buttons?:
+              | {
+                  label: string;
+                  link?: {
+                    type?: ('page' | 'route' | 'url') | null;
+                    route?:
+                      | (
+                          | 'home'
+                          | 'calendar'
+                          | 'documents'
+                          | 'rules'
+                          | 'audio'
+                          | 'news'
+                          | 'media'
+                          | 'sections'
+                          | 'contacts'
+                          | 'participants'
+                          | 'coaches'
+                          | 'judges'
+                          | 'parents'
+                          | 'ranking'
+                          | 'antidoping'
+                          | 'about'
+                          | 'leadership'
+                          | 'requisites'
+                          | 'history'
+                          | 'privacy'
+                          | 'cookies'
+                        )
+                      | null;
+                    page?: (number | null) | Page;
+                    /**
+                     * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                     */
+                    url?: string | null;
+                  };
+                  style?: ('line' | 'red') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'buttons';
+          }
+        | {
+            title?: string | null;
+            mode?: ('category' | 'manual') | null;
+            category?:
+              | (
+                  | 'federation'
+                  | 'rules'
+                  | 'classification'
+                  | 'regulations'
+                  | 'education'
+                  | 'orders'
+                  | 'antidoping'
+                  | 'forms'
+                )
+              | null;
+            documents?: (number | Document)[] | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'documents';
+          }
+        | {
+            title?: string | null;
+            items?:
+              | {
+                  title: string;
+                  text?: string | null;
+                  url: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'links';
+          }
+        | {
+            title?: string | null;
+            items?:
+              | {
+                  title: string;
+                  answer: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            title?: string | null;
+            group: 'leadership' | 'coach' | 'judge' | 'representative';
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'people';
+          }
+        | {
+            title?: string | null;
+            videos: (number | Video)[];
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'video';
+          }
+        | {
+            tabs?:
+              | {
+                  label: string;
+                  hidden?: boolean | null;
+                  content?:
+                    | (
+                        | {
+                            content: {
+                              root: {
+                                type: string;
+                                children: {
+                                  type: any;
+                                  version: number;
+                                  [k: string]: unknown;
+                                }[];
+                                direction: ('ltr' | 'rtl') | null;
+                                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                                indent: number;
+                                version: number;
+                              };
+                              [k: string]: unknown;
+                            };
+                            /**
+                             * Если в тексте три и больше заголовков второго уровня, каждый станет отдельной вкладкой.
+                             */
+                            splitTabs?: boolean | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'text';
+                          }
+                        | {
+                            kicker?: string | null;
+                            title?: string | null;
+                            content: {
+                              root: {
+                                type: string;
+                                children: {
+                                  type: any;
+                                  version: number;
+                                  [k: string]: unknown;
+                                }[];
+                                direction: ('ltr' | 'rtl') | null;
+                                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                                indent: number;
+                                version: number;
+                              };
+                              [k: string]: unknown;
+                            };
+                            image: number | Media;
+                            imageSide?: ('right' | 'left') | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'textImage';
+                          }
+                        | {
+                            image: number | Media;
+                            caption?: string | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'image';
+                          }
+                        | {
+                            buttons?:
+                              | {
+                                  label: string;
+                                  link?: {
+                                    type?: ('page' | 'route' | 'url') | null;
+                                    route?:
+                                      | (
+                                          | 'home'
+                                          | 'calendar'
+                                          | 'documents'
+                                          | 'rules'
+                                          | 'audio'
+                                          | 'news'
+                                          | 'media'
+                                          | 'sections'
+                                          | 'contacts'
+                                          | 'participants'
+                                          | 'coaches'
+                                          | 'judges'
+                                          | 'parents'
+                                          | 'ranking'
+                                          | 'antidoping'
+                                          | 'about'
+                                          | 'leadership'
+                                          | 'requisites'
+                                          | 'history'
+                                          | 'privacy'
+                                          | 'cookies'
+                                        )
+                                      | null;
+                                    page?: (number | null) | Page;
+                                    /**
+                                     * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                                     */
+                                    url?: string | null;
+                                  };
+                                  style?: ('line' | 'red') | null;
+                                  id?: string | null;
+                                }[]
+                              | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'buttons';
+                          }
+                        | {
+                            title?: string | null;
+                            mode?: ('category' | 'manual') | null;
+                            category?:
+                              | (
+                                  | 'federation'
+                                  | 'rules'
+                                  | 'classification'
+                                  | 'regulations'
+                                  | 'education'
+                                  | 'orders'
+                                  | 'antidoping'
+                                  | 'forms'
+                                )
+                              | null;
+                            documents?: (number | Document)[] | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'documents';
+                          }
+                        | {
+                            title?: string | null;
+                            items?:
+                              | {
+                                  title: string;
+                                  text?: string | null;
+                                  url: string;
+                                  id?: string | null;
+                                }[]
+                              | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'links';
+                          }
+                        | {
+                            title?: string | null;
+                            items?:
+                              | {
+                                  title: string;
+                                  answer: string;
+                                  id?: string | null;
+                                }[]
+                              | null;
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'faq';
+                          }
+                        | {
+                            title?: string | null;
+                            group: 'leadership' | 'coach' | 'judge' | 'representative';
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'people';
+                          }
+                        | {
+                            title?: string | null;
+                            videos: (number | Video)[];
+                            /**
+                             * Блок останется в админке, но посетители его не увидят.
+                             */
+                            hidden?: boolean | null;
+                            id?: string | null;
+                            blockName?: string | null;
+                            blockType: 'video';
+                          }
+                      )[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tabs';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            mode?: ('auto' | 'manual') | null;
+            featured?: (number | null) | Event;
+            /**
+             * Одно или два мероприятия. Можно оставить пустым.
+             */
+            side?: (number | Event)[] | null;
+            /**
+             * Если пусто, этого блока не будет.
+             */
+            recent?: (number | null) | Event;
+            /**
+             * Горизонтальная фотография, поверх неё затемнение, чтобы текст читался. Если пусто, блок синий.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'events';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sectionsMap';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            count?: number | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            /**
+             * Если пусто, берётся самый свежий альбом.
+             */
+            gallery?: (number | null) | Gallery;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            kicker?: string | null;
+            title?: string | null;
+            moreLabel?: string | null;
+            moreLink?: {
+              type?: ('page' | 'route' | 'url') | null;
+              route?:
+                | (
+                    | 'home'
+                    | 'calendar'
+                    | 'documents'
+                    | 'rules'
+                    | 'audio'
+                    | 'news'
+                    | 'media'
+                    | 'sections'
+                    | 'contacts'
+                    | 'participants'
+                    | 'coaches'
+                    | 'judges'
+                    | 'parents'
+                    | 'ranking'
+                    | 'antidoping'
+                    | 'about'
+                    | 'leadership'
+                    | 'requisites'
+                    | 'history'
+                    | 'privacy'
+                    | 'cookies'
+                  )
+                | null;
+              page?: (number | null) | Page;
+              /**
+               * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+               */
+              url?: string | null;
+            };
+            items?:
+              | {
+                  icon?:
+                    ('scroll' | 'book' | 'medal' | 'music' | 'cap' | 'shield' | 'pin' | 'flag' | 'calendar') | null;
+                  title: string;
+                  text?: string | null;
+                  link?: {
+                    type?: ('page' | 'route' | 'url') | null;
+                    route?:
+                      | (
+                          | 'home'
+                          | 'calendar'
+                          | 'documents'
+                          | 'rules'
+                          | 'audio'
+                          | 'news'
+                          | 'media'
+                          | 'sections'
+                          | 'contacts'
+                          | 'participants'
+                          | 'coaches'
+                          | 'judges'
+                          | 'parents'
+                          | 'ranking'
+                          | 'antidoping'
+                          | 'about'
+                          | 'leadership'
+                          | 'requisites'
+                          | 'history'
+                          | 'privacy'
+                          | 'cookies'
+                        )
+                      | null;
+                    page?: (number | null) | Page;
+                    /**
+                     * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+                     */
+                    url?: string | null;
                   };
                   id?: string | null;
-                  blockName?: string | null;
-                  blockType: 'text';
-                }
-              | {
-                  title?: string | null;
-                  mode?: ('category' | 'manual') | null;
-                  category?:
-                    | (
-                        | 'federation'
-                        | 'rules'
-                        | 'classification'
-                        | 'regulations'
-                        | 'education'
-                        | 'orders'
-                        | 'antidoping'
-                        | 'forms'
-                      )
-                    | null;
-                  documents?: (number | Document)[] | null;
-                  id?: string | null;
-                  blockName?: string | null;
-                  blockType: 'documents';
-                }
-              | {
-                  buttons?:
-                    | {
-                        label: string;
-                        link?: {
-                          type?: ('route' | 'page' | 'url') | null;
-                          route?:
-                            | (
-                                | 'home'
-                                | 'calendar'
-                                | 'documents'
-                                | 'rules'
-                                | 'audio'
-                                | 'news'
-                                | 'media'
-                                | 'sections'
-                                | 'contacts'
-                                | 'participants'
-                                | 'coaches'
-                                | 'judges'
-                                | 'parents'
-                                | 'ranking'
-                                | 'antidoping'
-                                | 'about'
-                                | 'leadership'
-                                | 'requisites'
-                                | 'history'
-                                | 'privacy'
-                                | 'cookies'
-                              )
-                            | null;
-                          page?: (number | null) | Page;
-                          /**
-                           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
-                           */
-                          url?: string | null;
-                        };
-                        style?: ('red' | 'line') | null;
-                        id?: string | null;
-                      }[]
-                    | null;
-                  id?: string | null;
-                  blockName?: string | null;
-                  blockType: 'buttons';
-                }
-              | {
-                  image: number | Media;
-                  caption?: string | null;
-                  id?: string | null;
-                  blockName?: string | null;
-                  blockType: 'image';
-                }
-            )[]
-          | null;
-        id?: string | null;
-      }[]
+                }[]
+              | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tiles';
+          }
+        | {
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stats';
+          }
+        | {
+            title?: string | null;
+            text?: string | null;
+            buttonLabel?: string | null;
+            buttonLink?: {
+              type?: ('page' | 'route' | 'url') | null;
+              route?:
+                | (
+                    | 'home'
+                    | 'calendar'
+                    | 'documents'
+                    | 'rules'
+                    | 'audio'
+                    | 'news'
+                    | 'media'
+                    | 'sections'
+                    | 'contacts'
+                    | 'participants'
+                    | 'coaches'
+                    | 'judges'
+                    | 'parents'
+                    | 'ranking'
+                    | 'antidoping'
+                    | 'about'
+                    | 'leadership'
+                    | 'requisites'
+                    | 'history'
+                    | 'privacy'
+                    | 'cookies'
+                  )
+                | null;
+              page?: (number | null) | Page;
+              /**
+               * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
+               */
+              url?: string | null;
+            };
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contactBand';
+          }
+        | {
+            content?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'builtin';
+          }
+      )[]
     | null;
-  published?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Разделы, где слева список пунктов, а справа содержимое: «О федерации», «Участникам» и новые. Чтобы добавить страницу в раздел, создайте её в «Текстовые страницы», выберите там раздел, а здесь добавьте пункт слева.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-sections".
- */
-export interface SiteSection {
-  id: number;
-  title: string;
+  lead?: string | null;
   /**
-   * Раздел откроется по адресу frsrk.ru/адрес. Для «О федерации» это about, для «Участникам» participants: их не меняйте.
-   */
-  slug: string;
-  /**
-   * Первый видимый пункт открывается, когда посетитель заходит в раздел.
-   */
-  items?:
-    | {
-        label: string;
-        link?: {
-          type?: ('route' | 'page' | 'url') | null;
-          route?:
-            | (
-                | 'home'
-                | 'calendar'
-                | 'documents'
-                | 'rules'
-                | 'audio'
-                | 'news'
-                | 'media'
-                | 'sections'
-                | 'contacts'
-                | 'participants'
-                | 'coaches'
-                | 'judges'
-                | 'parents'
-                | 'ranking'
-                | 'antidoping'
-                | 'about'
-                | 'leadership'
-                | 'requisites'
-                | 'history'
-                | 'privacy'
-                | 'cookies'
-              )
-            | null;
-          page?: (number | null) | Page;
-          /**
-           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
-           */
-          url?: string | null;
-        };
-        hidden?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Если пусто, берётся картинка из «Данные федерации → Полосы заголовков».
+   * Если пусто, берётся картинка раздела, а если её нет, из «Данные федерации → Полосы заголовков».
    */
   banner?: (number | null) | Media;
   slogan?: string | null;
+  /**
+   * Если пусто, берётся заголовок страницы.
+   */
+  metaTitle?: string | null;
+  /**
+   * Если пусто, берётся текст под заголовком.
+   */
+  metaDescription?: string | null;
+  title: string;
+  /**
+   * Если отличается от заголовка.
+   */
+  menuLabel?: string | null;
+  kind?:
+    | (
+        | 'custom'
+        | 'home'
+        | 'calendar'
+        | 'documents'
+        | 'rules'
+        | 'audio'
+        | 'news'
+        | 'media'
+        | 'participants'
+        | 'coaches'
+        | 'judges'
+        | 'parents'
+        | 'ranking'
+        | 'antidoping'
+        | 'about'
+        | 'leadership'
+        | 'requisites'
+        | 'history'
+        | 'contacts'
+        | 'sections'
+        | 'privacy'
+        | 'cookies'
+      )
+    | null;
+  /**
+   * Выберите раздел, например «О федерации», и страница появится в меню слева этого раздела. Пусто: страница верхнего уровня.
+   */
+  parent?: (number | null) | Page;
+  /**
+   * Если пусто, сделается из заголовка. Полный адрес: адрес раздела + этот адрес.
+   */
+  slug?: string | null;
   published?: boolean | null;
+  showInMenu?: boolean | null;
+  dropdown?: boolean | null;
+  /**
+   * Как «Антидопинг»: страница живёт в разделе, но ссылка на неё есть и наверху.
+   */
+  alsoInTopMenu?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -893,10 +1452,6 @@ export interface PayloadLockedDocument {
         value: number | Page;
       } | null)
     | ({
-        relationTo: 'site-sections';
-        value: number | SiteSection;
-      } | null)
-    | ({
         relationTo: 'galleries';
         value: number | Gallery;
       } | null)
@@ -983,6 +1538,8 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1042,6 +1599,8 @@ export interface DocumentsSelect<T extends boolean = true> {
   status?: T;
   order?: T;
   published?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1063,6 +1622,8 @@ export interface AudioTracksSelect<T extends boolean = true> {
   durationLabel?: T;
   order?: T;
   published?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1087,6 +1648,8 @@ export interface VideosSelect<T extends boolean = true> {
   description?: T;
   published?: T;
   inGallery?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1215,98 +1778,405 @@ export interface PeopleSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
-  title?: T;
-  key?: T;
-  slug?: T;
-  section?: T;
-  lead?: T;
-  body?: T;
-  tabs?:
+  _order?: T;
+  layout?:
     | T
     | {
-        label?: T;
-        hidden?: T;
-        blocks?:
+        hero?:
           | T
           | {
-              text?:
-                | T
-                | {
-                    content?: T;
-                    id?: T;
-                    blockName?: T;
-                  };
-              documents?:
-                | T
-                | {
-                    title?: T;
-                    mode?: T;
-                    category?: T;
-                    documents?: T;
-                    id?: T;
-                    blockName?: T;
-                  };
+              title?: T;
+              lead?: T;
+              mode?: T;
+              image?: T;
+              video?: T;
+              videoMobile?: T;
               buttons?:
                 | T
                 | {
-                    buttons?:
+                    label?: T;
+                    link?:
                       | T
                       | {
-                          label?: T;
-                          link?:
-                            | T
-                            | {
-                                type?: T;
-                                route?: T;
-                                page?: T;
-                                url?: T;
-                              };
-                          style?: T;
-                          id?: T;
+                          type?: T;
+                          route?: T;
+                          page?: T;
+                          url?: T;
                         };
+                    style?: T;
                     id?: T;
-                    blockName?: T;
                   };
-              image?:
-                | T
-                | {
-                    image?: T;
-                    caption?: T;
-                    id?: T;
-                    blockName?: T;
-                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
             };
-        id?: T;
-      };
-  published?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-sections_select".
- */
-export interface SiteSectionsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  items?:
-    | T
-    | {
-        label?: T;
-        link?:
+        text?:
           | T
           | {
-              type?: T;
-              route?: T;
-              page?: T;
-              url?: T;
+              content?: T;
+              splitTabs?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
             };
-        hidden?: T;
-        id?: T;
+        textImage?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              content?: T;
+              image?: T;
+              imageSide?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        image?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        buttons?:
+          | T
+          | {
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          route?: T;
+                          page?: T;
+                          url?: T;
+                        };
+                    style?: T;
+                    id?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        documents?:
+          | T
+          | {
+              title?: T;
+              mode?: T;
+              category?: T;
+              documents?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        links?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    text?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        people?:
+          | T
+          | {
+              title?: T;
+              group?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        video?:
+          | T
+          | {
+              title?: T;
+              videos?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tabs?:
+          | T
+          | {
+              tabs?:
+                | T
+                | {
+                    label?: T;
+                    hidden?: T;
+                    content?:
+                      | T
+                      | {
+                          text?:
+                            | T
+                            | {
+                                content?: T;
+                                splitTabs?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          textImage?:
+                            | T
+                            | {
+                                kicker?: T;
+                                title?: T;
+                                content?: T;
+                                image?: T;
+                                imageSide?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          image?:
+                            | T
+                            | {
+                                image?: T;
+                                caption?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          buttons?:
+                            | T
+                            | {
+                                buttons?:
+                                  | T
+                                  | {
+                                      label?: T;
+                                      link?:
+                                        | T
+                                        | {
+                                            type?: T;
+                                            route?: T;
+                                            page?: T;
+                                            url?: T;
+                                          };
+                                      style?: T;
+                                      id?: T;
+                                    };
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          documents?:
+                            | T
+                            | {
+                                title?: T;
+                                mode?: T;
+                                category?: T;
+                                documents?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          links?:
+                            | T
+                            | {
+                                title?: T;
+                                items?:
+                                  | T
+                                  | {
+                                      title?: T;
+                                      text?: T;
+                                      url?: T;
+                                      id?: T;
+                                    };
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          faq?:
+                            | T
+                            | {
+                                title?: T;
+                                items?:
+                                  | T
+                                  | {
+                                      title?: T;
+                                      answer?: T;
+                                      id?: T;
+                                    };
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          people?:
+                            | T
+                            | {
+                                title?: T;
+                                group?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                          video?:
+                            | T
+                            | {
+                                title?: T;
+                                videos?: T;
+                                hidden?: T;
+                                id?: T;
+                                blockName?: T;
+                              };
+                        };
+                    id?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        events?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              mode?: T;
+              featured?: T;
+              side?: T;
+              recent?: T;
+              image?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionsMap?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        news?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              count?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              gallery?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tiles?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              moreLabel?: T;
+              moreLink?:
+                | T
+                | {
+                    type?: T;
+                    route?: T;
+                    page?: T;
+                    url?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    text?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          route?: T;
+                          page?: T;
+                          url?: T;
+                        };
+                    id?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        stats?:
+          | T
+          | {
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contactBand?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              buttonLabel?: T;
+              buttonLink?:
+                | T
+                | {
+                    type?: T;
+                    route?: T;
+                    page?: T;
+                    url?: T;
+                  };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        builtin?:
+          | T
+          | {
+              content?: T;
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
+  lead?: T;
   banner?: T;
   slogan?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  title?: T;
+  menuLabel?: T;
+  kind?: T;
+  parent?: T;
+  slug?: T;
   published?: T;
+  showInMenu?: T;
+  dropdown?: T;
+  alsoInTopMenu?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1406,7 +2276,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Логотип, верхнее меню, красная кнопка, соцсети, мероприятия на главной и ссылки в подвале. Пункты можно добавлять, скрывать, удалять и перетаскивать мышью.
+ * Логотип, надпись в шапке, красная кнопка, соцсети и ссылки в подвале. Пункты меню задаются в «Страницы сайта».
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-layout".
@@ -1426,91 +2296,11 @@ export interface SiteLayout {
    * Если пусто, надписи нет.
    */
   slogan?: string | null;
-  menu?:
-    | {
-        label: string;
-        link?: {
-          type?: ('route' | 'page' | 'url') | null;
-          route?:
-            | (
-                | 'home'
-                | 'calendar'
-                | 'documents'
-                | 'rules'
-                | 'audio'
-                | 'news'
-                | 'media'
-                | 'sections'
-                | 'contacts'
-                | 'participants'
-                | 'coaches'
-                | 'judges'
-                | 'parents'
-                | 'ranking'
-                | 'antidoping'
-                | 'about'
-                | 'leadership'
-                | 'requisites'
-                | 'history'
-                | 'privacy'
-                | 'cookies'
-              )
-            | null;
-          page?: (number | null) | Page;
-          /**
-           * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
-           */
-          url?: string | null;
-        };
-        hidden?: boolean | null;
-        children?:
-          | {
-              label: string;
-              link?: {
-                type?: ('route' | 'page' | 'url') | null;
-                route?:
-                  | (
-                      | 'home'
-                      | 'calendar'
-                      | 'documents'
-                      | 'rules'
-                      | 'audio'
-                      | 'news'
-                      | 'media'
-                      | 'sections'
-                      | 'contacts'
-                      | 'participants'
-                      | 'coaches'
-                      | 'judges'
-                      | 'parents'
-                      | 'ranking'
-                      | 'antidoping'
-                      | 'about'
-                      | 'leadership'
-                      | 'requisites'
-                      | 'history'
-                      | 'privacy'
-                      | 'cookies'
-                    )
-                  | null;
-                page?: (number | null) | Page;
-                /**
-                 * Полная ссылка (https://…) или адрес на сайте, начиная с косой черты, например /calendar.
-                 */
-                url?: string | null;
-              };
-              hidden?: boolean | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
   cta?: {
     show?: boolean | null;
     label?: string | null;
     link?: {
-      type?: ('route' | 'page' | 'url') | null;
+      type?: ('page' | 'route' | 'url') | null;
       route?:
         | (
             | 'home'
@@ -1562,26 +2352,6 @@ export interface SiteLayout {
         id?: string | null;
       }[]
     | null;
-  homeEvents?: {
-    /**
-     * Если пусто: «Ближайшие мероприятия».
-     */
-    title?: string | null;
-    mode?: ('auto' | 'manual') | null;
-    featured?: (number | null) | Event;
-    /**
-     * Одно или два мероприятия. Можно оставить пустым.
-     */
-    side?: (number | Event)[] | null;
-    /**
-     * Если пусто, этого блока не будет.
-     */
-    recent?: (number | null) | Event;
-    /**
-     * Горизонтальная фотография. Поверх неё будет затемнение, чтобы текст читался. Если пусто, блок синий, как сейчас.
-     */
-    image?: (number | null) | Media;
-  };
   footerColumns?:
     | {
         title: string;
@@ -1590,7 +2360,7 @@ export interface SiteLayout {
           | {
               label: string;
               link?: {
-                type?: ('route' | 'page' | 'url') | null;
+                type?: ('page' | 'route' | 'url') | null;
                 route?:
                   | (
                       | 'home'
@@ -1645,26 +2415,9 @@ export interface SiteSetting {
   legalName?: string | null;
   description?: string | null;
   /**
-   * Если пусто, показывается: «От первого прыжка до сборной Крыма».
-   */
-  heroTitle?: string | null;
-  /**
-   * Если пусто, показывается стандартный текст про секции, календарь, положения и протоколы.
-   */
-  heroLead?: string | null;
-  /**
-   * Она же остаётся запасной, пока грузится видео, и стоит на тёмных полосах внутренних страниц.
+   * Стоит на тёмной полосе в начале страниц, у которых нет своей картинки. Первый экран главной настраивается в «Страницы сайта → Главная».
    */
   heroImage?: (number | null) | Media;
-  heroMode?: ('photo' | 'video') | null;
-  /**
-   * Выберите видео из раздела «Содержимое → Видео» (загруженный файл MP4, у которого включено «Показывать на сайте»). Лучше ролик 10–20 секунд, 1920×1080, до 8 МБ. Звука на сайте нет. Хотите скрыть его из раздела «Медиа», снимите у самого видео галочку «Показывать в разделе Медиа».
-   */
-  heroVideo?: (number | null) | Video;
-  /**
-   * По умолчанию на телефонах показывается фото, чтобы не тратить мобильный трафик посетителей.
-   */
-  heroVideoMobile?: boolean | null;
   ogImage?: (number | null) | Media;
   banners?: {
     /**
@@ -1708,36 +2461,6 @@ export interface SiteLayoutSelect<T extends boolean = true> {
   logo?: T;
   showName?: T;
   slogan?: T;
-  menu?:
-    | T
-    | {
-        label?: T;
-        link?:
-          | T
-          | {
-              type?: T;
-              route?: T;
-              page?: T;
-              url?: T;
-            };
-        hidden?: T;
-        children?:
-          | T
-          | {
-              label?: T;
-              link?:
-                | T
-                | {
-                    type?: T;
-                    route?: T;
-                    page?: T;
-                    url?: T;
-                  };
-              hidden?: T;
-              id?: T;
-            };
-        id?: T;
-      };
   cta?:
     | T
     | {
@@ -1761,16 +2484,6 @@ export interface SiteLayoutSelect<T extends boolean = true> {
         icon?: T;
         hidden?: T;
         id?: T;
-      };
-  homeEvents?:
-    | T
-    | {
-        title?: T;
-        mode?: T;
-        featured?: T;
-        side?: T;
-        recent?: T;
-        image?: T;
       };
   footerColumns?:
     | T
@@ -1807,12 +2520,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   shortName?: T;
   legalName?: T;
   description?: T;
-  heroTitle?: T;
-  heroLead?: T;
   heroImage?: T;
-  heroMode?: T;
-  heroVideo?: T;
-  heroVideoMobile?: T;
   ogImage?: T;
   banners?:
     | T

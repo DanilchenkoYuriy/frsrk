@@ -209,14 +209,18 @@ async function main() {
     const meta = Object.fromEntries(match[1].split("\n").map((l) => [l.slice(0, l.indexOf(":")).trim(), l.slice(l.indexOf(":") + 1).trim()]));
     const markdown = match[2].trim();
     const body = markdown ? convertMarkdownToLexical({ editorConfig, markdown }) : undefined;
-    const found = await exists(p, "pages", { key: { equals: meta.key } });
-    // Уже существующие страницы не перезаписываем: редактор мог их изменить в админке.
-    if (found) continue;
-    await p.create({
-      collection: "pages",
-      data: { key: meta.key as never, title: meta.title, lead: meta.lead, body, published: true },
-      overrideAccess: true,
-    });
+    // В файлах страниц старые ключи; встроенные страницы создаёт миграция, здесь в них добавляется текст
+    const kind = ({ "education-judges": "judges", "education-coaches": "coaches" } as Record<string, string>)[meta.key] ?? meta.key;
+    const res = await p.find({ collection: "pages", where: { kind: { equals: kind } }, limit: 1, depth: 0, overrideAccess: true });
+    const page = res.docs[0];
+    // Уже заполненные страницы не перезаписываем: редактор мог их изменить в админке.
+    if (!body || (page && (page.layout ?? []).some((b) => b.blockType === "text"))) continue;
+    const text = { blockType: "text" as const, content: body, splitTabs: !["about", "privacy", "cookies"].includes(kind) };
+    if (page) {
+      await p.update({ collection: "pages", id: page.id, data: { lead: page.lead ?? meta.lead, layout: [text, ...(page.layout ?? [])] }, overrideAccess: true });
+    } else {
+      await p.create({ collection: "pages", data: { kind: kind as never, title: meta.title, lead: meta.lead, layout: [text], published: true }, overrideAccess: true });
+    }
     log(`+ ${meta.title}`);
   }
 

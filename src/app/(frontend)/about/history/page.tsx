@@ -1,7 +1,11 @@
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
+import { SLOGANS } from "@/config/slogans";
 
-export const generateMetadata = () => textPageMetadata("history", "История");
+const fallback = { title: "История", slogan: SLOGANS.history };
 
+export const generateMetadata = () => pageMetadata("history", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
 export default function HistoryPage() {
-  return <TextPage pageKey="history" fallbackTitle="История" section={{ key: "about", href: "/about/history" }} />;
+  return <PageView kind="history" banner="about" fallback={fallback} />;
 }

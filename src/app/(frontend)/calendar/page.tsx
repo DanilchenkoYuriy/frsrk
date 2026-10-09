@@ -1,15 +1,11 @@
-import type { Metadata } from "next";
 import { getEvents, populated, type DocumentDoc, type Municipality } from "@/lib/cms";
 import { EVENT_LEVELS, EVENT_TYPES, labelOf } from "@/lib/constants";
 import { EVENT_STATUS_LABELS, eventStatus, todayIso } from "@/lib/status";
-import { PageHead } from "@/components/ui/PageHead";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { SLOGANS } from "@/config/slogans";
 import { CalendarExplorer, type EventView } from "@/components/calendar/CalendarExplorer";
 
-export const metadata: Metadata = {
-  title: "Календарь мероприятий",
-  description: "Календарь соревнований, семинаров и сборов ФРСРК. Положения, регламенты, регистрация и протоколы.",
-};
+export const generateMetadata = () => pageMetadata("calendar", { title: "Календарь мероприятий", description: "Календарь соревнований, семинаров и сборов ФРСРК. Положения, регламенты, регистрация и протоколы." });
 
 export default async function CalendarPage() {
   const today = todayIso();
@@ -36,13 +32,15 @@ export default async function CalendarPage() {
   });
 
   return (
-    <>
-      <PageHead banner="calendar" slogan={SLOGANS.calendar} title="Календарь мероприятий" lead="Соревнования, семинары и сборы федерации. Откройте мероприятие, чтобы найти положение, регистрацию и протоколы." crumbs={[{ label: "Календарь" }]} />
-      <div className="page">
-        <div className="container">
-          {views.length ? <CalendarExplorer events={views} today={today} /> : <p className="empty">Мероприятий пока нет.</p>}
-        </div>
-      </div>
-    </>
+      <PageView
+        kind="calendar"
+        banner="calendar"
+        fallback={{ title: "Календарь мероприятий", lead: "Соревнования, семинары и сборы федерации. Откройте мероприятие, чтобы найти положение, регистрацию и протоколы.", slogan: SLOGANS.calendar }}
+        builtin={
+          <>
+      {views.length ? <CalendarExplorer events={views} today={today} /> : <p className="empty">Мероприятий пока нет.</p>}
+          </>
+        }
+      />
   );
 }

@@ -1,21 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { getGalleries, getPage, getVideos, populated, type Media } from "@/lib/cms";
+import { getGalleries, getVideos, populated, type Media } from "@/lib/cms";
 import { formatDate } from "@/lib/dates";
-import { PageHead } from "@/components/ui/PageHead";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { SLOGANS } from "@/config/slogans";
 import { Picture } from "@/components/ui/Picture";
-import { RichText } from "@/components/ui/RichText";
 import { Tabs } from "@/components/ui/Tabs";
 import { Wip } from "@/components/ui/Wip";
 
-export const metadata: Metadata = {
-  title: "Медиа",
-  description: "Фотоальбомы и видео с соревнований и мероприятий ФРСРК.",
-};
+export const generateMetadata = () => pageMetadata("media", { title: "Медиа", description: "Фотоальбомы и видео с соревнований и мероприятий ФРСРК." });
 
 export default async function MediaPage() {
-  const [galleries, allVideos, page] = await Promise.all([getGalleries(), getVideos(), getPage("media")]);
+  const [galleries, allVideos] = await Promise.all([getGalleries(), getVideos()]);
   const videos = allVideos.filter((v) => v.inGallery !== false);
   const empty = galleries.length === 0 && videos.length === 0;
 
@@ -84,14 +79,15 @@ export default async function MediaPage() {
   ];
 
   return (
-    <>
-      <PageHead banner="media" slogan={SLOGANS.media} title="Медиа" lead={page?.lead ?? "Фотографии и видео с мероприятий федерации."} crumbs={[{ label: "Медиа" }]} />
-      <div className="page">
-        <div className="container">
-          <RichText data={page?.body} />
-          {empty ? <Wip title="Фото и видео скоро появятся" /> : tabs.length === 1 ? tabs[0].content : <Tabs tabs={tabs} label="Медиа" />}
-        </div>
-      </div>
-    </>
+      <PageView
+        kind="media"
+        banner="media"
+        fallback={{ title: "Медиа", lead: "Фотографии и видео с мероприятий федерации.", slogan: SLOGANS.media }}
+        builtin={
+          <>
+      {empty ? <Wip title="Фото и видео скоро появятся" /> : tabs.length === 1 ? tabs[0].content : <Tabs tabs={tabs} label="Медиа" />}
+          </>
+        }
+      />
   );
 }

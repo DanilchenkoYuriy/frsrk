@@ -57,20 +57,6 @@ export const DISCIPLINES = [
   { value: "team", label: "Командные соревнования" },
 ] as const;
 
-export const PAGE_KEYS = [
-  { value: "about", label: "О федерации" },
-  { value: "history", label: "История" },
-  { value: "parents", label: "Родителям" },
-  { value: "antidoping", label: "Антидопинг" },
-  { value: "rules", label: "Правила вида спорта (текст)" },
-  { value: "education-judges", label: "Судейство" },
-  { value: "education-coaches", label: "Тренерам" },
-  { value: "leadership", label: "Руководство" },
-  { value: "privacy", label: "Политика обработки персональных данных" },
-  { value: "cookies", label: "Файлы cookie" },
-  { value: "media", label: "Медиа" },
-] as const;
-
 export const PEOPLE_GROUPS = [
   { value: "leadership", label: "Руководство" },
   { value: "coach", label: "Тренеры" },
@@ -141,30 +127,48 @@ export type SiteRoute = (typeof SITE_ROUTES)[number]["value"];
 
 export const routeHref = (value: string | null | undefined): string | null => SITE_ROUTES.find((r) => r.value === value)?.href ?? null;
 
-/** Адреса встроенных текстовых страниц (поле «Встроенная страница» у текстовых страниц). */
-export const PAGE_KEY_HREF: Record<string, string> = {
-  about: "/about",
-  history: "/about/history",
-  parents: "/participants/parents",
-  antidoping: "/participants/antidoping",
-  rules: "/documents/rules",
-  "education-judges": "/participants/judges",
-  "education-coaches": "/participants/coaches",
-  leadership: "/about/leadership",
-  privacy: "/legal/privacy",
-  cookies: "/legal/cookies",
-  media: "/media",
-};
-
-/** Первые части адреса, которые уже заняты сайтом. Раздел «О федерации» и «Участникам» можно, остальные нельзя. */
-export const RESERVED_SLUGS = ["admin", "api", "calendar", "documents", "news", "media", "sections", "contacts", "legal", "brand", "fonts", "robots.txt", "sitemap.xml", "favicon.ico"] as const;
-
-/** Вторые части адреса, уже занятые встроенными страницами внутри разделов. */
-export const RESERVED_SUBSLUGS = ["coaches", "judges", "parents", "ranking", "antidoping", "leadership", "requisites", "history", "rules", "audio", "privacy", "cookies", "photos"] as const;
-
 export const SOCIAL_NETWORKS = [
   { value: "vk", label: "ВКонтакте" },
   { value: "telegram", label: "Telegram" },
   { value: "youtube", label: "YouTube" },
   { value: "other", label: "Другая (своя иконка)" },
 ] as const;
+
+/**
+ * Встроенные страницы сайта. У каждой постоянный адрес и своё основное содержимое
+ * (список мероприятий, карта секций, форма и т. п.), вокруг которого в админке собираются блоки.
+ * parent задаёт место в дереве страниц по умолчанию (используется при первом заполнении).
+ */
+export const PAGE_KINDS = [
+  { value: "home", label: "Главная", href: "/", builtin: false },
+  { value: "calendar", label: "Календарь", href: "/calendar", builtin: true },
+  { value: "documents", label: "Документы", href: "/documents", builtin: true },
+  { value: "rules", label: "Правила вида спорта", href: "/documents/rules", builtin: true, parent: "documents" },
+  { value: "audio", label: "Музыка для соревнований", href: "/documents/audio", builtin: true, parent: "documents" },
+  { value: "news", label: "Новости", href: "/news", builtin: true },
+  { value: "media", label: "Медиа", href: "/media", builtin: true },
+  { value: "participants", label: "Участникам", href: "/participants", builtin: false },
+  { value: "coaches", label: "Тренерам", href: "/participants/coaches", builtin: false, parent: "participants" },
+  { value: "judges", label: "Судьям", href: "/participants/judges", builtin: false, parent: "participants" },
+  { value: "parents", label: "Родителям", href: "/participants/parents", builtin: false, parent: "participants" },
+  { value: "ranking", label: "Рейтинг спортсменов", href: "/participants/ranking", builtin: true, parent: "participants" },
+  { value: "antidoping", label: "Антидопинг", href: "/participants/antidoping", builtin: false, parent: "participants" },
+  { value: "about", label: "О федерации", href: "/about", builtin: false },
+  { value: "leadership", label: "Руководство", href: "/about/leadership", builtin: true, parent: "about" },
+  { value: "requisites", label: "Реквизиты", href: "/about/requisites", builtin: true, parent: "about" },
+  { value: "history", label: "История", href: "/about/history", builtin: false, parent: "about" },
+  { value: "contacts", label: "Контакты", href: "/contacts", builtin: true },
+  { value: "sections", label: "Найти секцию", href: "/sections", builtin: true },
+  { value: "privacy", label: "Политика обработки персональных данных", href: "/legal/privacy", builtin: false },
+  { value: "cookies", label: "Файлы cookie", href: "/legal/cookies", builtin: false },
+] as const;
+
+export type PageKind = (typeof PAGE_KINDS)[number]["value"];
+
+export const pageKindOf = (value: string | null | undefined) => PAGE_KINDS.find((k) => k.value === value);
+
+/** Первые части адреса, уже занятые сайтом: новые страницы так называться не могут. */
+export const RESERVED_SLUGS = ["admin", "api", "brand", "fonts", "legal", "robots.txt", "sitemap.xml", "favicon.ico", ...PAGE_KINDS.map((k) => k.href.split("/")[1]).filter(Boolean)];
+
+/** Части адреса внутри встроенных разделов, занятые встроенными страницами. */
+export const RESERVED_SUBSLUGS = [...PAGE_KINDS.map((k) => k.href.split("/")[2]).filter(Boolean), "photos"];

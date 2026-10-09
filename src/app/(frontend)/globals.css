@@ -3317,6 +3317,57 @@ ol {
   margin-block: 28px;
 }
 
+.page-block:first-child {
+  margin-top: 0;
+}
+
+/* Текст с картинкой */
+
+.text-image {
+  display: grid;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .text-image {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .text-image--left .text-image__media {
+    order: -1;
+  }
+}
+
+.text-image__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+/* Вопрос-ответ */
+
+.faq {
+  border-top: 1px solid var(--line);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq__q {
+  min-height: 44px;
+  padding: 14px 0;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.faq__a {
+  margin: 0 0 16px;
+  white-space: pre-line;
+}
+
 .page-block--buttons {
   display: flex;
   flex-wrap: wrap;

@@ -1,30 +1,11 @@
-import { getDocuments } from "@/lib/cms";
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
-import { DocumentRow } from "@/components/documents/DocumentRow";
+import { PageView, pageMetadata } from "@/components/page/PageView";
+import { SLOGANS } from "@/config/slogans";
 
-export const generateMetadata = () => textPageMetadata("education-coaches", "Тренерам");
+const fallback = { title: "Тренерам", slogan: SLOGANS.coaches };
 
-export default async function CoachesPage() {
-  const docs = (await getDocuments()).filter((d) => d.category === "education");
-  return (
-    <TextPage
-      pageKey="education-coaches"
-      fallbackTitle="Тренерам"
-      section={{ key: "participants", href: "/participants/coaches" }}
-      after={
-        docs.length > 0 ? (
-          <section style={{ marginTop: 40 }} aria-labelledby="c-docs">
-            <h2 className="h3" id="c-docs">
-              Стандарты и программы подготовки
-            </h2>
-            <ul>
-              {docs.map((d) => (
-                <DocumentRow key={d.id} doc={d} />
-              ))}
-            </ul>
-          </section>
-        ) : null
-      }
-    />
-  );
+export const generateMetadata = () => pageMetadata("coaches", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
+export default function CoachesPage() {
+  return <PageView kind="coaches" banner="participants" fallback={fallback} />;
 }

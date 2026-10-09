@@ -1,5 +1,6 @@
-import type { Page, SiteSection } from "@/payload-types";
-import { PAGE_KEY_HREF, routeHref } from "@/lib/constants";
+import type { Page } from "@/payload-types";
+import { routeHref } from "@/lib/constants";
+import type { SiteTree } from "@/lib/tree";
 
 /** Поле «Куда ведёт» из админки (src/fields/link.ts). */
 export interface CmsLink {
@@ -9,22 +10,14 @@ export interface CmsLink {
   url?: string | null;
 }
 
-/** Адрес текстовой страницы: встроенная по своему ключу, новая по разделу и адресу. */
-export function pageHref(page: Pick<Page, "key" | "slug" | "section">): string | null {
-  if (page.key) return PAGE_KEY_HREF[page.key] ?? null;
-  if (!page.slug) return null;
-  const section = page.section && typeof page.section === "object" ? (page.section as SiteSection) : null;
-  return section ? `/${section.slug}/${page.slug}` : `/${page.slug}`;
-}
-
-/** Адрес ссылки на сайте или null, если ссылка не заполнена (такой пункт не показывается). */
-export function linkHref(link: CmsLink | null | undefined): string | null {
+/** Адрес ссылки на сайте или null, если ссылка пустая или ведёт на скрытую страницу (такой пункт не показывается). */
+export function linkHref(link: CmsLink | null | undefined, tree: SiteTree): string | null {
   if (!link) return null;
-  switch (link.type ?? "route") {
+  switch (link.type ?? "page") {
     case "route":
       return routeHref(link.route);
     case "page":
-      return link.page && typeof link.page === "object" && link.page.published !== false ? pageHref(link.page) : null;
+      return tree.hrefOf(link.page && typeof link.page === "object" ? link.page.id : link.page);
     case "url":
       return link.url?.trim() || null;
     default:
@@ -35,15 +28,14 @@ export function linkHref(link: CmsLink | null | undefined): string | null {
 export const isExternal = (href: string) => /^(https?:)?\/\//.test(href) || href.startsWith("mailto:") || href.startsWith("tel:");
 
 interface Linkable {
-  label: string;
   link?: CmsLink | null;
   hidden?: boolean | null;
 }
 
 /** Видимые пункты с готовыми адресами: скрытые и пустые отбрасываются. */
-export function visibleLinks<T extends Linkable>(items: readonly T[] | null | undefined): (T & { href: string })[] {
+export function visibleLinks<T extends Linkable>(items: readonly T[] | null | undefined, tree: SiteTree): (T & { href: string })[] {
   return (items ?? []).flatMap((item) => {
-    const href = item.hidden ? null : linkHref(item.link);
+    const href = item.hidden ? null : linkHref(item.link, tree);
     return href ? [{ ...item, href }] : [];
   });
 }

@@ -1,16 +1,12 @@
-import type { Metadata } from "next";
 import { getDocuments } from "@/lib/cms";
 import { DOCUMENT_CATEGORIES, labelOf } from "@/lib/constants";
 import { formatDate } from "@/lib/dates";
 import { SLOGANS } from "@/config/slogans";
-import { DocumentsPage } from "@/components/documents/DocumentsPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { DocumentCards } from "@/components/documents/DocumentCards";
 import { extensionOf, fileSize } from "@/components/documents/DocumentRow";
 
-export const metadata: Metadata = {
-  title: "Документы",
-  description: "Устав, правила вида спорта, ЕВСК, положения, приказы и музыка для соревнований ФРСРК.",
-};
+export const generateMetadata = () => pageMetadata("documents", { title: "Документы", description: "Устав, правила вида спорта, ЕВСК, положения, приказы и музыка для соревнований ФРСРК." });
 
 const norm = (v: string) => v.toLowerCase().replace(/ё/g, "е");
 
@@ -26,7 +22,13 @@ export default async function DocumentsRoute({ searchParams }: { searchParams: P
     .sort((a, b) => order(a.category) - order(b.category) || (a.order ?? 100) - (b.order ?? 100));
 
   return (
-    <DocumentsPage active={cat ? cat.value : "all"} title="Документы" lead="Документы федерации и вида спорта. Файлы хранятся на сервере ФРСРК." slogan={SLOGANS.documents} q={q}>
+    <PageView
+      kind="documents"
+      banner="documents"
+      fallback={{ title: "Документы", lead: "Документы федерации и вида спорта. Файлы хранятся на сервере ФРСРК.", slogan: SLOGANS.documents }}
+      documents={{ active: cat ? `/documents?category=${cat.value}` : "/documents", q }}
+      builtin={
+        <>
       <div className="shell__head">
         <div>
           <h2 className="h3" style={{ marginBottom: 4 }}>
@@ -54,6 +56,8 @@ export default async function DocumentsRoute({ searchParams }: { searchParams: P
       ) : (
         <p className="empty">{all.length ? "По вашему запросу документов не найдено." : "Документы пока не опубликованы."}</p>
       )}
-    </DocumentsPage>
+        </>
+      }
+    />
   );
 }

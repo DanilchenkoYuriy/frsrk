@@ -1,15 +1,11 @@
-import type { Metadata } from "next";
 import { getDocuments, getSettings } from "@/lib/cms";
 import { formatDate } from "@/lib/dates";
 import { telHref } from "@/lib/site";
 import { SLOGANS } from "@/config/slogans";
-import { SectionPage } from "@/components/section/SectionPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 
-export const metadata: Metadata = {
-  title: "Реквизиты и аккредитация",
-  description: "Полное наименование, ОГРН, адрес и сведения о государственной аккредитации ФРСРК.",
-};
+export const generateMetadata = () => pageMetadata("requisites", { title: "Реквизиты и аккредитация", description: "Полное наименование, ОГРН, адрес и сведения о государственной аккредитации ФРСРК." });
 
 export default async function RequisitesPage() {
   const [s, docs] = await Promise.all([getSettings(), getDocuments()]);
@@ -28,7 +24,12 @@ export default async function RequisitesPage() {
   ];
 
   return (
-    <SectionPage section="about" href="/about/requisites" title="Реквизиты и аккредитация" lead="Сведения об организации, государственной аккредитации и учредительные документы." slogan={SLOGANS.requisites}>
+    <PageView
+      kind="requisites"
+      banner="about"
+      fallback={{ title: "Реквизиты и аккредитация", lead: "Сведения об организации, государственной аккредитации и учредительные документы.", slogan: SLOGANS.requisites }}
+      builtin={
+        <>
       <div style={{ display: "grid", gap: 32 }}>
         <div className="aside-card">
           <h2 className="aside-card__title">Реквизиты организации</h2>
@@ -96,6 +97,8 @@ export default async function RequisitesPage() {
           </section>
         ) : null}
       </div>
-    </SectionPage>
+        </>
+      }
+    />
   );
 }

@@ -1,24 +1,25 @@
 import "server-only";
-import { getLayout, populated, type Media } from "@/lib/cms";
+import { cache } from "react";
+import { getLayout, getPagesIndex, populated, type Media } from "@/lib/cms";
 import { SOCIAL_NETWORKS } from "@/lib/constants";
-import { visibleLinks } from "@/lib/links";
+import { linkHref, visibleLinks } from "@/lib/links";
+import { buildTree } from "@/lib/tree";
 import type { SocialLink } from "@/components/ui/Icons";
 import type { NavItem } from "@/config/navigation";
 
 const DEFAULT_LOGO = { url: "/brand/frsrk-logo.png", width: 577, height: 433 };
 
-/** Шапка, меню и подвал из админки в виде, готовом для вывода: скрытые пункты убраны, адреса собраны. */
+/** Дерево страниц сайта: один раз на запрос. */
+export const getSiteTree = cache(async () => buildTree(await getPagesIndex()));
+
+/** Шапка, меню и подвал в виде, готовом для вывода: скрытые пункты убраны, адреса собраны. */
 export async function getSiteLayout() {
-  const l = await getLayout();
+  const [l, tree] = await Promise.all([getLayout(), getSiteTree()]);
   const media = populated<Media>(l.logo);
   const logo = l.showLogo === false ? null : media?.url ? { url: media.url, width: media.width ?? 400, height: media.height ?? 300 } : DEFAULT_LOGO;
 
-  const menu: NavItem[] = visibleLinks(l.menu).map((item) => {
-    const children = visibleLinks(item.children).map(({ label, href }) => ({ label, href }));
-    return { label: item.label, href: item.href, ...(children.length ? { children } : {}) };
-  });
-
-  const [cta] = l.cta?.show === false ? [] : visibleLinks([{ label: l.cta?.label || "Найти секцию", link: l.cta?.link }]);
+  const menu: NavItem[] = tree.topMenu();
+  const ctaHref = l.cta?.show === false ? null : linkHref(l.cta?.link, tree);
 
   const socials: SocialLink[] = (l.socials ?? [])
     .filter((s) => !s.hidden && s.url?.trim())
@@ -31,7 +32,7 @@ export async function getSiteLayout() {
 
   const footerColumns = (l.footerColumns ?? [])
     .filter((c) => !c.hidden)
-    .map((c) => ({ title: c.title, links: visibleLinks(c.links).map(({ label, href }) => ({ label, href })) }))
+    .map((c) => ({ title: c.title, links: visibleLinks(c.links, tree).map(({ label, href }) => ({ label, href })) }))
     .filter((c) => c.links.length);
 
   return {
@@ -39,7 +40,7 @@ export async function getSiteLayout() {
     showName: l.showName !== false,
     slogan: l.slogan?.trim() || null,
     menu,
-    cta: cta ? { label: cta.label, href: cta.href } : null,
+    cta: ctaHref ? { label: l.cta?.label || "Найти секцию", href: ctaHref } : null,
     socials,
     footerColumns,
   };

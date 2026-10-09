@@ -1,7 +1,10 @@
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
 
-export const generateMetadata = () => textPageMetadata("cookies", "Файлы cookie");
+const fallback = { title: "Файлы cookie" };
 
+export const generateMetadata = () => pageMetadata("cookies", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
 export default function CookiesPage() {
-  return <TextPage pageKey="cookies" fallbackTitle="Файлы cookie" tabs={false} />;
+  return <PageView kind="cookies" fallback={fallback} />;
 }

@@ -2,7 +2,7 @@ import type { Field, GroupField } from "payload";
 import { SITE_ROUTES } from "@/lib/constants";
 
 /**
- * Куда ведёт пункт меню или кнопка: встроенная страница сайта, текстовая страница из админки
+ * Куда ведёт ссылка или кнопка: страница сайта из «Страницы сайта», встроенный адрес
  * или любая ссылка. Адрес на сайте собирается в src/lib/links.ts.
  */
 export const linkField = (overrides: Partial<GroupField> = {}): Field => ({
@@ -15,10 +15,10 @@ export const linkField = (overrides: Partial<GroupField> = {}): Field => ({
       name: "type",
       type: "radio",
       label: "Тип ссылки",
-      defaultValue: "route",
+      defaultValue: "page",
       options: [
-        { label: "Страница сайта", value: "route" },
-        { label: "Текстовая страница из админки", value: "page" },
+        { label: "Страница сайта", value: "page" },
+        { label: "Встроенный адрес", value: "route" },
         { label: "Своя ссылка", value: "url" },
       ],
       admin: { layout: "horizontal" },
@@ -26,16 +26,16 @@ export const linkField = (overrides: Partial<GroupField> = {}): Field => ({
     {
       name: "route",
       type: "select",
-      label: "Страница сайта",
+      label: "Встроенный адрес",
       options: SITE_ROUTES.map(({ value, label }) => ({ value, label })),
-      admin: { condition: (_, sibling) => (sibling?.type ?? "route") === "route" },
+      admin: { condition: (_, sibling) => sibling?.type === "route" },
     },
     {
       name: "page",
       type: "relationship",
       relationTo: "pages",
-      label: "Текстовая страница",
-      admin: { condition: (_, sibling) => sibling?.type === "page" },
+      label: "Страница сайта",
+      admin: { condition: (_, sibling) => (sibling?.type ?? "page") === "page" },
     },
     {
       name: "url",

@@ -26,7 +26,6 @@ import { RankingEntries } from "@/collections/RankingEntries";
 import { Inquiries } from "@/collections/Inquiries";
 import { SiteSettings } from "@/globals/SiteSettings";
 import { SiteLayout } from "@/globals/SiteLayout";
-import { SiteSections } from "@/collections/SiteSections";
 import { migrations } from "@/migrations";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,7 +40,7 @@ const withLocalStorage = (collection: CollectionConfig): CollectionConfig => {
   };
 };
 
-const collections = [Users, Media, Documents, AudioTracks, Videos, News, Events, Municipalities, Sections, People, Pages, SiteSections, Galleries, RankingEntries, Inquiries].map(
+const collections = [Users, Media, Documents, AudioTracks, Videos, News, Events, Municipalities, Sections, People, Pages, Galleries, RankingEntries, Inquiries].map(
   withLocalStorage,
 );
 

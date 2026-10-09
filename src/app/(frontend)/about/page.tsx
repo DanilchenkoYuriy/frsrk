@@ -1,7 +1,11 @@
-import { TextPage, textPageMetadata } from "@/components/ui/TextPage";
+import { PageView, pageMetadata } from "@/components/page/PageView";
+import { SLOGANS } from "@/config/slogans";
 
-export const generateMetadata = () => textPageMetadata("about", "О федерации");
+const fallback = { title: "О федерации", slogan: SLOGANS.about };
 
+export const generateMetadata = () => pageMetadata("about", fallback);
+
+/** Текст и блоки страницы задаются в «Страницы сайта». */
 export default function AboutPage() {
-  return <TextPage pageKey="about" fallbackTitle="О федерации" section={{ key: "about", href: "/about" }} tabs={false} />;
+  return <PageView kind="about" banner="about" fallback={fallback} />;
 }
