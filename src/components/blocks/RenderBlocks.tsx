@@ -90,7 +90,7 @@ async function DocumentsView({ block }: { block: BlockOf<"documents"> }) {
           const id = typeof d === "object" ? d.id : d;
           return all.filter((x) => x.id === id);
         })
-      : all.filter((d) => d.category === block.category);
+      : all.filter((d) => d.category === block.category && d.inList !== false);
   const shown = docs.filter((d: DocumentDoc) => d.url);
   if (!shown.length) return null;
   return (

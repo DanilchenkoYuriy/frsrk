@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { getAudioTracks, getDocuments } from "@/lib/cms";
+import { getAudioTracks, getListedDocuments } from "@/lib/cms";
 import { DOCUMENT_CATEGORIES } from "@/lib/constants";
 import type { SiteTree, TreeNode } from "@/lib/tree";
 import { SectionShell, type ShellItem } from "@/components/section/SectionShell";
@@ -18,7 +18,7 @@ interface Props {
  * Страницы раздела (правила, музыка, новые) берутся из «Страницы сайта», категории документов появляются сами.
  */
 export async function DocumentsShell({ active, q, tree, root, children }: Props) {
-  const [docs, audio] = await Promise.all([getDocuments(), getAudioTracks()]);
+  const [docs, audio] = await Promise.all([getListedDocuments(), getAudioTracks()]);
   const pages = root ? tree.sideMenu(root).filter((i) => i.href !== root.href) : [];
   const kindOf = (href: string) => tree.byHref(href)?.kind;
   const pageItem = (i: { label: string; href: string }): ShellItem | null => {

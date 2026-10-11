@@ -75,5 +75,15 @@ export const Documents: CollectionConfig = {
       defaultValue: false,
       admin: { position: "sidebar", description: "Включите, когда документ проверен. Документы со списками детей публикуйте только при согласии родителей." },
     },
+    {
+      name: "inList",
+      type: "checkbox",
+      label: "Показывать в разделе «Документы»",
+      defaultValue: true,
+      admin: {
+        position: "sidebar",
+        description: "Снимите, если документ нужен только в мероприятии (регламент, протокол). Он будет на странице мероприятия, но не в списке документов. «Показывать на сайте» при этом должно быть включено.",
+      },
+    },
   ],
 };

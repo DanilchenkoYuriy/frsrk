@@ -1,4 +1,4 @@
-import { getDocuments, getPage } from "@/lib/cms";
+import { getListedDocuments, getPage } from "@/lib/cms";
 import { DISCIPLINE_CARDS } from "@/config/disciplines";
 import { SLOGANS } from "@/config/slogans";
 import { PageView, pageMetadata } from "@/components/page/PageView";
@@ -21,7 +21,7 @@ const SHORT: Record<string, string> = {
 };
 
 export default async function RulesPage() {
-  const [docs, page] = await Promise.all([getDocuments(), getPage("rules")]);
+  const [docs, page] = await Promise.all([getListedDocuments(), getPage("rules")]);
   const file = docs.find((d) => d.category === "rules" && d.number === "264" && d.url);
   // Текст правил хранится в блоке «Основное содержимое страницы» у страницы «Правила вида спорта»
   const builtin = page?.layout?.find((b) => b.blockType === "builtin");

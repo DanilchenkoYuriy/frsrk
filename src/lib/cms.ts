@@ -110,7 +110,10 @@ export const getDocuments = cached("documents", async (): Promise<DocumentDoc[]>
   return res.docs;
 });
 
-export const getDocumentsByCategory = async (category: DocumentCategory) => (await getDocuments()).filter((d) => d.category === category);
+/** Документы для списков на сайте: без тех, что нужны только в мероприятиях. */
+export const getListedDocuments = async () => (await getDocuments()).filter((d) => d.inList !== false);
+
+export const getDocumentsByCategory = async (category: DocumentCategory) => (await getListedDocuments()).filter((d) => d.category === category);
 
 export const getAudioTracks = cached("audio", async (): Promise<AudioTrack[]> => {
   const p = await payload();

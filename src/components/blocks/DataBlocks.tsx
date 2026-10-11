@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   getAudioTracks,
-  getDocuments,
+  getListedDocuments,
   getEvents,
   getGalleries,
   getMunicipalities,
@@ -378,7 +378,7 @@ export function TilesView({ block, tree }: { block: BlockOf<"tiles">; tree: Site
 /* Федерация в цифрах */
 
 export async function StatsView() {
-  const [{ sectionsCount, republicWithSections }, documents, audio, events] = await Promise.all([mapData(), getDocuments(), getAudioTracks(), getEvents()]);
+  const [{ sectionsCount, republicWithSections }, documents, audio, events] = await Promise.all([mapData(), getListedDocuments(), getAudioTracks(), getEvents()]);
   const today = todayIso();
   const upcoming = events.filter((e) => eventStatus(e, today) !== "finished").length;
   const stats = [

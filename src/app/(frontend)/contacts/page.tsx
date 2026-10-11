@@ -5,6 +5,7 @@ import { telHref } from "@/lib/site";
 import { PageView, pageMetadata } from "@/components/page/PageView";
 import { SLOGANS } from "@/config/slogans";
 import { ContactForm } from "@/components/contact/ContactForm";
+import { ICONS } from "@/components/ui/Icons";
 
 export const generateMetadata = () => pageMetadata("contacts", { title: "Контакты", description: "Телефон, почта и адрес ФРСРК. Форма обратной связи." });
 
@@ -48,9 +49,10 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
                 <div>
                   <dt>Адрес</dt>
                   <dd>
-                    {s.address}{" "}
-                    <a href={`https://yandex.ru/maps/?text=${encodeURIComponent(s.address)}`} target="_blank" rel="noopener noreferrer">
-                      На карте
+                    {s.address}
+                    <a className="btn btn--line btn--sm place-map" href={`https://yandex.ru/maps/?text=${encodeURIComponent(s.address)}`} target="_blank" rel="noopener noreferrer">
+                      {ICONS.pin}
+                      Открыть на карте
                     </a>
                   </dd>
                 </div>

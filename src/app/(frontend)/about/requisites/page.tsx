@@ -1,4 +1,4 @@
-import { getDocuments, getSettings } from "@/lib/cms";
+import { getListedDocuments, getSettings } from "@/lib/cms";
 import { formatDate } from "@/lib/dates";
 import { telHref } from "@/lib/site";
 import { SLOGANS } from "@/config/slogans";
@@ -8,7 +8,7 @@ import { DocumentRow } from "@/components/documents/DocumentRow";
 export const generateMetadata = () => pageMetadata("requisites", { title: "Реквизиты и аккредитация", description: "Полное наименование, ОГРН, адрес и сведения о государственной аккредитации ФРСРК." });
 
 export default async function RequisitesPage() {
-  const [s, docs] = await Promise.all([getSettings(), getDocuments()]);
+  const [s, docs] = await Promise.all([getSettings(), getListedDocuments()]);
   const federationDocs = docs.filter((d) => d.category === "federation");
   const acc = s.accreditation;
 

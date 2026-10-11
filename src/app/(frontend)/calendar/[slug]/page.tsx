@@ -8,6 +8,7 @@ import { formatInt, jumpStatsOf, jumpsWord } from "@/lib/stats";
 import { PageHead } from "@/components/ui/PageHead";
 import { SLOGANS } from "@/config/slogans";
 import { RichText } from "@/components/ui/RichText";
+import { ICONS } from "@/components/ui/Icons";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -118,14 +119,10 @@ export default async function EventPage({ params }: Props) {
                     <dt>Место</dt>
                     <dd>
                       {[city, event.venue].filter(Boolean).join(", ")}
-                      {city || event.venue ? (
-                        <>
-                          {" "}
-                          <a href={`https://yandex.ru/maps/?text=${encodeURIComponent([city, event.venue].filter(Boolean).join(", "))}`} target="_blank" rel="noopener noreferrer">
-                            На карте
-                          </a>
-                        </>
-                      ) : null}
+                      <a className="btn btn--line btn--sm place-map" href={`https://yandex.ru/maps/?text=${encodeURIComponent([city, event.venue].filter(Boolean).join(", "))}`} target="_blank" rel="noopener noreferrer">
+                        {ICONS.pin}
+                        Открыть на карте
+                      </a>
                     </dd>
                   </div>
                 ) : null}

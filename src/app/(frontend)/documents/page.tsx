@@ -1,4 +1,4 @@
-import { getDocuments } from "@/lib/cms";
+import { getListedDocuments } from "@/lib/cms";
 import { DOCUMENT_CATEGORIES, labelOf } from "@/lib/constants";
 import { formatDate } from "@/lib/dates";
 import { SLOGANS } from "@/config/slogans";
@@ -12,7 +12,7 @@ const norm = (v: string) => v.toLowerCase().replace(/ё/g, "е");
 
 export default async function DocumentsRoute({ searchParams }: { searchParams: Promise<{ category?: string; q?: string }> }) {
   const { category, q } = await searchParams;
-  const all = await getDocuments();
+  const all = await getListedDocuments();
   const cat = DOCUMENT_CATEGORIES.find((c) => c.value === category);
   const query = norm((q ?? "").trim());
   const order = (c: string) => DOCUMENT_CATEGORIES.findIndex((x) => x.value === c);

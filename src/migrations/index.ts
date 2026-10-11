@@ -10,6 +10,7 @@ import * as migration_20261009_123221_home_events from './20261009_123221_home_e
 import * as migration_20261009_190222_pages_blocks from './20261009_190222_pages_blocks';
 import * as migration_20261011_124638_social_max from './20261011_124638_social_max';
 import * as migration_20261011_140000_max_link_privacy from './20261011_140000_max_link_privacy';
+import * as migration_20261011_143144_documents_in_list from './20261011_143144_documents_in_list';
 import * as migration_20261011_150000_remove_moscow from './20261011_150000_remove_moscow';
 
 export const migrations = [
@@ -72,6 +73,11 @@ export const migrations = [
     up: migration_20261011_140000_max_link_privacy.up,
     down: migration_20261011_140000_max_link_privacy.down,
     name: '20261011_140000_max_link_privacy',
+  },
+  {
+    up: migration_20261011_143144_documents_in_list.up,
+    down: migration_20261011_143144_documents_in_list.down,
+    name: '20261011_143144_documents_in_list',
   },
   {
     up: migration_20261011_150000_remove_moscow.up,

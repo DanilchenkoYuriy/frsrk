@@ -250,6 +250,10 @@ export interface Document {
    * Включите, когда документ проверен. Документы со списками детей публикуйте только при согласии родителей.
    */
   published?: boolean | null;
+  /**
+   * Снимите, если документ нужен только в мероприятии (регламент, протокол). Он будет на странице мероприятия, но не в списке документов. «Показывать на сайте» при этом должно быть включено.
+   */
+  inList?: boolean | null;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -1605,6 +1609,7 @@ export interface DocumentsSelect<T extends boolean = true> {
   status?: T;
   order?: T;
   published?: T;
+  inList?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
