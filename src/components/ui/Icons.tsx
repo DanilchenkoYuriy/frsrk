@@ -12,6 +12,16 @@ export const TelegramIcon = () => (
   </svg>
 );
 
+// Знак мессенджера Max, взят с max.ru
+export const MaxIcon = () => (
+  <svg viewBox="-10 -10 120 122" aria-hidden="true">
+    <path
+      fillRule="evenodd"
+      d="M50.76 0c27.53 0 49.12 22.34 49.12 49.89S77.61 99.23 51.02 99.23c-9.43 0-14.01-1.33-21.37-6.54-.5-.36-1.2-.26-1.63.19-5.66 6.04-20.17 10.28-20.83 2.03C7.19 80.53 0 71.18 0 49.61 0 21.3 23.22 0 50.76 0m.77 24.55c-13.07-.68-23.26 8.39-25.51 22.58-1.86 11.75 1.44 26.07 4.26 26.8 1.2.3 4.08-1.9 6.18-3.88.4-.37.99-.44 1.45-.15 3.27 2 6.97 3.5 11.05 3.71 13.42.7 25.3-9.8 26-23.21.71-13.42-10.01-25.14-23.43-25.85"
+    />
+  </svg>
+);
+
 const stroke = (d: string) => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d={d} />
@@ -54,6 +64,7 @@ export interface SocialLink {
 export function SocialIcon({ network, iconUrl }: Pick<SocialLink, "network" | "iconUrl">) {
   if (network === "vk") return <VkIcon />;
   if (network === "telegram") return <TelegramIcon />;
+  if (network === "max") return <MaxIcon />;
   if (network === "youtube") return <YoutubeIcon />;
   // eslint-disable-next-line @next/next/no-img-element
   if (iconUrl) return <img src={iconUrl} alt="" width={22} height={22} />;

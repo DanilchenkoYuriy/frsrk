@@ -2338,7 +2338,7 @@ export interface SiteLayout {
    */
   socials?:
     | {
-        network: 'vk' | 'telegram' | 'youtube' | 'other';
+        network: 'vk' | 'telegram' | 'max' | 'youtube' | 'other';
         /**
          * Например, «Сообщество федерации». Показывается на странице «Контакты» и читается программами для незрячих.
          */

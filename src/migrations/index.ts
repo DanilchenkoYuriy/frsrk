@@ -8,6 +8,8 @@ import * as migration_20261002_124215_event_jump_stats from './20261002_124215_e
 import * as migration_20261009_063657_site_structure from './20261009_063657_site_structure';
 import * as migration_20261009_123221_home_events from './20261009_123221_home_events';
 import * as migration_20261009_190222_pages_blocks from './20261009_190222_pages_blocks';
+import * as migration_20261011_124638_social_max from './20261011_124638_social_max';
+import * as migration_20261011_140000_max_link_privacy from './20261011_140000_max_link_privacy';
 
 export const migrations = [
   {
@@ -58,6 +60,16 @@ export const migrations = [
   {
     up: migration_20261009_190222_pages_blocks.up,
     down: migration_20261009_190222_pages_blocks.down,
-    name: '20261009_190222_pages_blocks'
+    name: '20261009_190222_pages_blocks',
+  },
+  {
+    up: migration_20261011_124638_social_max.up,
+    down: migration_20261011_124638_social_max.down,
+    name: '20261011_124638_social_max',
+  },
+  {
+    up: migration_20261011_140000_max_link_privacy.up,
+    down: migration_20261011_140000_max_link_privacy.down,
+    name: '20261011_140000_max_link_privacy'
   },
 ];

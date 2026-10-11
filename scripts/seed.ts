@@ -9,12 +9,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { getPayload, type Payload, type CollectionSlug } from "payload";
 import config from "@payload-config";
-import { convertMarkdownToLexical, editorConfigFactory } from "@payloadcms/richtext-lexical";
+import { seedPageTexts } from "./seed-pages-lib";
 import { AUDIO, DOCUMENTS, EVENTS, MUNICIPALITIES, PEOPLE, SECTIONS } from "./seed-data";
 
 const root = path.resolve(import.meta.dirname, "..");
 const assets = process.env.SEED_ASSETS_DIR ?? path.join(root, "seed-assets");
-const pagesDir = path.join(root, "content", "pages");
 
 const MIME: Record<string, string> = {
   ".pdf": "application/pdf",
@@ -201,28 +200,7 @@ async function main() {
 
   // ── Тексты страниц ─────────────────────────────────────────────────────
   console.log("Тексты страниц");
-  const editorConfig = await editorConfigFactory.default({ config: p.config });
-  for (const name of fs.readdirSync(pagesDir).filter((f) => f.endsWith(".md"))) {
-    const raw = fs.readFileSync(path.join(pagesDir, name), "utf8");
-    const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-    if (!match) continue;
-    const meta = Object.fromEntries(match[1].split("\n").map((l) => [l.slice(0, l.indexOf(":")).trim(), l.slice(l.indexOf(":") + 1).trim()]));
-    const markdown = match[2].trim();
-    const body = markdown ? convertMarkdownToLexical({ editorConfig, markdown }) : undefined;
-    // В файлах страниц старые ключи; встроенные страницы создаёт миграция, здесь в них добавляется текст
-    const kind = ({ "education-judges": "judges", "education-coaches": "coaches" } as Record<string, string>)[meta.key] ?? meta.key;
-    const res = await p.find({ collection: "pages", where: { kind: { equals: kind } }, limit: 1, depth: 0, overrideAccess: true });
-    const page = res.docs[0];
-    // Уже заполненные страницы не перезаписываем: редактор мог их изменить в админке.
-    if (!body || (page && (page.layout ?? []).some((b) => b.blockType === "text"))) continue;
-    const text = { blockType: "text" as const, content: body, splitTabs: !["about", "privacy", "cookies"].includes(kind) };
-    if (page) {
-      await p.update({ collection: "pages", id: page.id, data: { lead: page.lead ?? meta.lead, layout: [text, ...(page.layout ?? [])] }, overrideAccess: true });
-    } else {
-      await p.create({ collection: "pages", data: { kind: kind as never, title: meta.title, lead: meta.lead, layout: [text], published: true }, overrideAccess: true });
-    }
-    log(`+ ${meta.title}`);
-  }
+  await seedPageTexts(p, log);
 
   // ── Фотоархив (черновик) ───────────────────────────────────────────────
   const photosDir = path.join(prepared, "photos");

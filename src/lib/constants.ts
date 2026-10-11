@@ -130,6 +130,7 @@ export const routeHref = (value: string | null | undefined): string | null => SI
 export const SOCIAL_NETWORKS = [
   { value: "vk", label: "ВКонтакте" },
   { value: "telegram", label: "Telegram" },
+  { value: "max", label: "Max" },
   { value: "youtube", label: "YouTube" },
   { value: "other", label: "Другая (своя иконка)" },
 ] as const;
