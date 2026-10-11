@@ -376,7 +376,13 @@ export interface Event {
   level: 'municipal' | 'republic' | 'russia' | 'international';
   dateFrom: string;
   dateTo?: string | null;
+  /**
+   * Только для мероприятий в Крыму. Если мероприятие в другом городе или стране, оставьте пустым и напишите место в поле «Площадка и адрес», например: «Москва, СК «Лужники»» или «Китай, Шанхай».
+   */
   municipality?: (number | null) | Municipality;
+  /**
+   * Для мероприятий вне Крыма начните с города или страны.
+   */
   venue?: string | null;
   description?: {
     root: {

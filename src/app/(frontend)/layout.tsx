@@ -29,8 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: s.fullName,
       title: s.fullName,
       description: s.description ?? undefined,
-      images: og?.url ? [{ url: og.url, width: og.width ?? 1200, height: og.height ?? 630 }] : undefined,
+      // Если картинку не загрузили в админке, берётся оформленная заставка с гербом из public/brand
+      images: og?.url ? [{ url: og.url, width: og.width ?? 1200, height: og.height ?? 630 }] : [{ url: "/brand/og-image.jpg", width: 1200, height: 630 }],
     },
+    twitter: { card: "summary_large_image" },
     alternates: { canonical: "./" },
     verification: env.YANDEX_VERIFICATION ? { yandex: env.YANDEX_VERIFICATION } : undefined,
   };

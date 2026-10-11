@@ -41,8 +41,14 @@ export const Events: CollectionConfig = {
         { name: "dateTo", type: "date", label: "Дата окончания (если несколько дней)", admin: { width: "50%", date: { pickerAppearance: "dayOnly", displayFormat: "dd.MM.yyyy" } } },
       ],
     },
-    { name: "municipality", type: "relationship", relationTo: "municipalities", label: "Город или район" },
-    { name: "venue", type: "text", label: "Площадка и адрес" },
+    {
+      name: "municipality",
+      type: "relationship",
+      relationTo: "municipalities",
+      label: "Город или район Крыма",
+      admin: { description: "Только для мероприятий в Крыму. Если мероприятие в другом городе или стране, оставьте пустым и напишите место в поле «Площадка и адрес», например: «Москва, СК «Лужники»» или «Китай, Шанхай»." },
+    },
+    { name: "venue", type: "text", label: "Площадка и адрес", admin: { description: "Для мероприятий вне Крыма начните с города или страны." } },
     { name: "description", type: "richText", label: "Описание" },
     {
       type: "row",
