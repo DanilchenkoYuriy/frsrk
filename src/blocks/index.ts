@@ -1,5 +1,5 @@
 import type { Block, Field } from "payload";
-import { DOCUMENT_CATEGORIES, PEOPLE_GROUPS, pageKindOf } from "@/lib/constants";
+import { DOCUMENT_CATEGORIES, PEOPLE_GROUPS, SCHEMES, pageKindOf } from "@/lib/constants";
 import { linkField } from "@/fields/link";
 
 /**
@@ -202,6 +202,15 @@ export const VideoBlock = block({
   ],
 });
 
+export const SchemeBlock = block({
+  slug: "scheme",
+  labels: { singular: "Интерактивная схема", plural: "Интерактивные схемы" },
+  fields: [
+    { name: "title", type: "text", label: "Заголовок блока" },
+    { name: "scheme", type: "select", label: "Схема", required: true, defaultValue: SCHEMES[0].value, options: SCHEMES.map(({ value, label }) => ({ value, label })) },
+  ],
+});
+
 const simpleBlocks = [TextBlock, TextImageBlock, ImageBlock, ButtonsBlock, DocumentsBlock, LinksBlock, FaqBlock, PeopleBlock, VideoBlock];
 
 export const TabsBlock = block({
@@ -366,6 +375,7 @@ export const TilesBlock = block({
             { label: "Метка на карте", value: "pin" },
             { label: "Флаг", value: "flag" },
             { label: "Календарь", value: "calendar" },
+            { label: "3D-схема", value: "cube" },
           ],
         },
         { name: "title", type: "text", label: "Название", required: true },
@@ -433,6 +443,7 @@ export const PAGE_BLOCKS = [
   NewsBlock,
   GalleryBlock,
   TilesBlock,
+  SchemeBlock,
   StatsBlock,
   ContactBandBlock,
   BuiltinBlock,

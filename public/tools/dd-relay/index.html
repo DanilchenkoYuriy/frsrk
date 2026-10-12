@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>3D-схема: прыжки через 2 скакалки 4 человека · ФРСРК</title>
+<!-- Отдельно в поиске не показывается: в поиск идёт страница сайта со схемой -->
+<meta name="robots" content="noindex, indexifembedded">
+<link rel="canonical" href="https://frsrk.ru/participants/posobiya/2-skakalki-4-cheloveka">
+<link rel="icon" href="frsrk-logo.png">
+<style>
+/* Шрифт Inter лежит рядом (fonts/), без внешних запросов, как на сайте */
+@font-face{font-family:"Inter Variable";font-style:normal;font-display:swap;font-weight:100 900;src:url(fonts/inter-cyrillic-wght-normal.woff2) format("woff2-variations");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Inter Variable";font-style:normal;font-display:swap;font-weight:100 900;src:url(fonts/inter-latin-wght-normal.woff2) format("woff2-variations");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{
+  /* Палитра сайта frsrk.ru (frsrk_v3/src/app/(frontend)/globals.css) */
+  --font:"Inter Variable","Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#f1f7ff; --panel:rgba(255,255,255,.88); --panel-solid:#ffffff; --text:#0b1727; --muted:#566578;
+  --line:#e1e8f0; --chip:#e3f0ff; --accent:#0d5db8; --accent-ink:#fff; --cta:#d20f2d; --cta-hover:#bb0b28;
+  --danger:#d20f2d; --ok:#0b8a4d; --shadow:0 10px 34px rgb(20 55 94 / .09);
+  --A:#f01938; --B:#1474d4; --C:#c99a36; --D:#0b8a4d; --rope1:#f01938; --rope2:#0d5db8;
+  --radius:14px; --radius-sm:9px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#061527; --panel:rgba(10,33,61,.84); --panel-solid:#0a213d; --text:#eef4fb; --muted:#9fb1c7;
+    --line:rgba(201,226,255,.12); --chip:rgba(201,226,255,.08); --accent:#5aa5ff; --accent-ink:#061527;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --rope1:#ff4d66; --rope2:#5aa5ff; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#061527; --panel:rgba(10,33,61,.84); --panel-solid:#0a213d; --text:#eef4fb; --muted:#9fb1c7;
+    --line:rgba(201,226,255,.12); --chip:rgba(201,226,255,.08); --accent:#5aa5ff; --accent-ink:#061527;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --rope1:#ff4d66; --rope2:#5aa5ff; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.panel{background:var(--panel);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+/* top bar */
+#topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;align-items:center;gap:12px;pointer-events:none;z-index:5}
+#topbar>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:10px 14px;color:inherit;text-decoration:none}
+.brand .logo{width:34px;height:34px;object-fit:contain;flex:none}
+.brand b{font-size:15px;display:block;line-height:1.1}
+.brand small{color:var(--muted);font-size:12px}
+.clock{margin:0 auto;display:flex;align-items:center;gap:16px;padding:8px 18px}
+#timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800;letter-spacing:-.5px;min-width:96px;text-align:center}
+.clock .sep{width:1px;height:30px;background:var(--line)}
+.kv{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:2px}
+.kv b{color:var(--text);font-size:14px;display:flex;align-items:center;gap:6px}
+.tools{display:flex;gap:6px;padding:6px}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:0;background:transparent;display:grid;place-items:center}
+.icon-btn:hover{background:var(--chip)}
+.icon-btn.on{background:var(--chip)}
+.icon-btn svg{width:20px;height:20px}
+
+.dot{--c:var(--accent);width:26px;height:26px;border-radius:50%;background:var(--c);color:#fff;font-weight:800;font-size:13px;display:inline-grid;place-items:center;flex:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+.dot.sm{width:20px;height:20px;font-size:11px}
+
+/* camera bar */
+#cams{position:absolute;top:84px;left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:5px;z-index:4}
+#cams button{border:0;background:transparent;padding:8px 12px;border-radius:11px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+#cams button:hover{background:var(--chip)}
+#cams button.on{background:var(--accent);color:var(--accent-ink)}
+#cams kbd{font-family:inherit;font-size:10px;opacity:.55;border:1px solid currentColor;border-radius:4px;padding:0 4px}
+
+/* cue + warning */
+#cue{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%) scale(.8);font-size:clamp(42px,8vw,96px);font-weight:800;letter-spacing:-2px;opacity:0;pointer-events:none;transition:opacity .25s,transform .35s;text-shadow:0 6px 30px rgba(0,0,0,.25);z-index:6;color:var(--text)}
+#cue.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#warn{position:absolute;left:50%;top:140px;transform:translateX(-50%) translateY(-8px);max-width:min(560px,calc(100% - 32px));background:var(--danger);color:#fff;border-radius:14px;padding:10px 16px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:flex-start;opacity:0;pointer-events:none;transition:.25s;z-index:6;box-shadow:0 10px 30px rgb(210 15 45 / .3)}
+#warn.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* side panels */
+#left{position:absolute;top:84px;left:14px;width:344px;bottom:110px;overflow:auto;padding:14px;z-index:3}
+#right{position:absolute;top:84px;right:14px;width:300px;bottom:110px;overflow:auto;padding:14px;z-index:3}
+body.hide-panels #left,body.hide-panels #right{display:none}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--chip);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:0;background:transparent;padding:9px;border-radius:9px;font-weight:700;font-size:13px}
+.tabs button.on{background:var(--panel-solid);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 2px 8px;font-weight:700}
+#mini{width:100%;aspect-ratio:6.4/5;display:block;margin-top:12px;background:var(--chip);border-radius:14px}
+.steps-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:12px}
+.steps-chips button{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:transparent;font-weight:700;font-size:13px}
+.steps-chips button.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.steps-chips button.done{background:var(--chip)}
+.step-card{margin-top:12px;padding:14px;border-radius:14px;background:var(--panel-solid);border:1px solid var(--line)}
+.step-card .n{font-size:12px;color:var(--muted);font-weight:700}
+.step-card h2{font-size:19px;margin:4px 0 8px;letter-spacing:-.3px}
+.step-card p{margin:0;font-size:14.5px;line-height:1.55}
+.step-card p b{padding:0 5px;border-radius:6px;color:#fff;font-weight:800}
+.row-btns{display:flex;gap:6px;margin-top:12px}
+.btn{border:1px solid var(--line);background:var(--panel-solid);border-radius:11px;padding:9px 12px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;flex:1}
+.rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rules li{font-size:13.5px;line-height:1.45;padding:9px 11px;border-radius:11px;background:var(--chip)}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.stat{padding:12px;border-radius:14px;background:var(--panel-solid);border:1px solid var(--line)}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.stat b{font-size:20px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:8px}
+.order{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+
+.arow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid transparent;background:transparent;padding:8px;border-radius:12px}
+.arow:hover{background:var(--chip)}
+.arow.sel{border-color:var(--accent);background:var(--chip)}
+.arow .txt{flex:1;min-width:0}
+.arow .txt b{font-size:14px;display:block}
+.arow .txt small{font-size:12.5px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .face{font-size:12px;color:var(--muted);white-space:nowrap}
+.hint{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.toggle{display:flex;align-items:center;gap:10px;padding:8px;border-radius:11px;font-size:13.5px;cursor:pointer}
+.toggle:hover{background:var(--chip)}
+.toggle input{appearance:none;width:34px;height:20px;border-radius:20px;background:var(--line);position:relative;flex:none;transition:.2s;cursor:pointer;margin:0}
+.toggle input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle input:checked{background:var(--accent)}
+.toggle input:checked::after{left:16px}
+.toggle span{flex:1}
+.toggle .btn{padding:5px 9px;font-size:12px}
+.err input:checked{background:var(--danger)}
+details{border-radius:12px;background:var(--chip);padding:4px 10px}
+summary{cursor:pointer;font-weight:700;font-size:13.5px;padding:6px 0}
+.pen{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid var(--line)}
+.pen b{white-space:nowrap}
+
+/* bottom bar */
+#bottom{position:absolute;left:14px;right:14px;bottom:14px;display:flex;align-items:center;gap:12px;padding:12px 16px;z-index:4}
+#play{width:52px;height:52px;border-radius:50%;border:0;background:var(--cta);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 6px 18px rgb(210 15 45 / .3)}
+#play:hover{background:var(--cta-hover)}
+#play svg{width:22px;height:22px}
+.navb{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel-solid);display:grid;place-items:center;flex:none}
+.navb svg{width:18px;height:18px}
+#tl{flex:1;position:relative;height:52px;cursor:pointer;touch-action:none;min-width:200px}
+#tl .track{position:absolute;left:0;right:0;top:18px;height:14px;border-radius:7px;overflow:hidden;display:flex;background:var(--chip)}
+#tl .seg{height:100%;position:relative;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;letter-spacing:.04em}
+#tl .tick{position:absolute;top:34px;transform:translateX(-50%);font-size:10px;color:var(--muted);white-space:nowrap;font-weight:600}
+#tl .tick::before{content:"";position:absolute;left:50%;top:-6px;width:1px;height:4px;background:var(--muted)}
+#tl .tick.ch{color:var(--text);font-weight:800}
+#tl .sdot{position:absolute;top:0;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--panel-solid);border:1.5px solid var(--accent);font-size:9px;font-weight:800;display:grid;place-items:center;color:var(--accent)}
+#tl .sdot.on{background:var(--accent);color:var(--accent-ink)}
+#head{position:absolute;top:12px;width:4px;height:26px;border-radius:3px;background:var(--text);transform:translateX(-50%);box-shadow:0 0 0 3px var(--panel-solid);pointer-events:none}
+.speed{display:flex;background:var(--chip);border-radius:11px;padding:3px;flex:none}
+.speed button{border:0;background:transparent;padding:6px 8px;border-radius:8px;font-size:12px;font-weight:700;min-width:38px}
+.speed button.on{background:var(--panel-solid);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-weight:600;z-index:10;background:var(--bg);transition:opacity .4s}
+
+@media (max-width:1180px){ #left{width:300px} #right{width:270px} #cams button span.l{display:none} }
+@media (max-width:900px){
+  #app{position:static;overflow:visible;display:flex;flex-direction:column;padding-bottom:16px}
+  #stage{position:relative;height:60vh;min-height:360px}
+  #left,#right,#bottom{position:static;width:auto;margin:10px 16px 0;bottom:auto}
+  #bottom{flex-wrap:wrap;padding:12px}
+  #tl{order:5;flex-basis:100%}
+  #topbar{top:10px;left:10px;right:10px;gap:8px}
+  .brand small,.brand b{display:none}
+  .clock{padding:6px 12px;gap:10px}
+  #timer{font-size:22px;min-width:74px}
+  .clock .kv:last-child,.clock .sep:nth-of-type(2){display:none}
+  #cams{top:auto;bottom:10px;max-width:calc(100% - 20px);overflow-x:auto}
+  #cams button{padding:7px 9px}
+  #cams kbd{display:none}
+  #warn{top:64px}
+  body.hide-panels #left,body.hide-panels #right{display:block}
+  #btn-panels{display:none}
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+<script type="importmap">
+{"imports":{"three":"./vendor/three.module.js","three/addons/controls/OrbitControls.js":"./vendor/OrbitControls.js"}}
+</script>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="c" tabindex="0" aria-label="3D-сцена: перемещение спортсменов"></canvas>
+    <div id="loading">Загружаю 3D-сцену…</div>
+
+    <div id="topbar">
+      <a class="brand panel" href="/participants/posobiya/2-skakalki-4-cheloveka" target="_top" title="На сайт ФРСРК">
+        <img class="logo" src="frsrk-logo.png" alt="ФРСРК" width="34" height="34">
+        <div><b>Дабл Датч · 4 человека</b><small>ФРСРК · схема смен и перемещений</small></div>
+      </a>
+      <div class="clock panel">
+        <div id="timer">0:00</div>
+        <div class="sep"></div>
+        <div class="kv">Прыгает<b id="hud-jumper">—</b></div>
+        <div class="sep"></div>
+        <div class="kv">Следующий сигнал<b id="hud-next">—</b></div>
+      </div>
+      <div class="tools panel">
+        <button class="icon-btn on" id="btn-sound" title="Озвучка трека (сигналы «15», «30», «Смена»)" aria-label="Звук">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path id="snd-wave" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-theme" title="Светлая / тёмная тема" aria-label="Тема">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-panels" title="Скрыть / показать панели (H)" aria-label="Панели">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 4v16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="cams" class="panel" role="group" aria-label="Камера">
+      <button data-cam="top">▦ <span class="l">Схема сверху</span> <kbd>1</kbd></button>
+      <button data-cam="hero" class="on">◈ <span class="l">3D-обзор</span> <kbd>2</kbd></button>
+      <button data-cam="judge">⚖ <span class="l">Судья</span> <kbd>3</kbd></button>
+      <button data-cam="side">◧ <span class="l">Сбоку</span> <kbd>4</kbd></button>
+      <button data-cam="pov">◉ <span class="l">Глазами прыгающего</span> <kbd>5</kbd></button>
+    </div>
+
+    <div id="cue"></div>
+    <div id="warn"><span>⚠</span><span id="warn-text"></span></div>
+  </div>
+
+  <div id="bottom" class="panel">
+    <button class="navb" id="prev" title="Предыдущий шаг (←)" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button id="play" title="Пуск / пауза (пробел)" aria-label="Пуск"><svg viewBox="0 0 24 24" fill="currentColor" id="play-ico"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="navb" id="next" title="Следующий шаг (→)" aria-label="Вперёд"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    <div id="tl" aria-label="Шкала времени"><div class="track" id="track"></div><div id="head"></div></div>
+    <div class="speed" id="speed" role="group" aria-label="Скорость">
+      <button data-s="0.25">¼×</button><button data-s="0.5">½×</button><button data-s="1" class="on">1×</button><button data-s="2">2×</button>
+    </div>
+  </div>
+
+  <aside id="left" class="panel">
+    <div class="tabs" role="tablist">
+      <button id="tab-steps" class="on">По шагам</button>
+      <button id="tab-run">Прогон 180 с</button>
+    </div>
+    <svg id="mini" viewBox="-3.2 -2.6 6.4 5.2" aria-label="Схема как на слайде"></svg>
+
+    <div id="pane-steps">
+      <div class="steps-chips" id="chips"></div>
+      <div class="step-card">
+        <div class="n" id="step-n">Шаг 1 из 8</div>
+        <h2 id="step-title"></h2>
+        <p id="step-text"></p>
+      </div>
+      <div class="row-btns">
+        <button class="btn" id="step-prev">← Назад</button>
+        <button class="btn" id="step-again" title="Повторить шаг">↻ Ещё раз</button>
+        <button class="btn primary" id="step-next">Дальше →</button>
+      </div>
+      <p class="hint">Совет: камера «Схема сверху» повторяет рисунки из презентации, а «3D-обзор» показывает, как это выглядит в зале.</p>
+    </div>
+
+    <div id="pane-run" hidden>
+      <div class="status">
+        <div class="stat"><small>Сейчас прыгает</small><b id="run-jumper">—</b></div>
+        <div class="stat"><small>До смены</small><b id="run-left">—</b></div>
+      </div>
+      <div class="order">Порядок прыжков:
+        <span class="dot sm" style="--c:var(--C)">C</span>→<span class="dot sm" style="--c:var(--D)">D</span>→<span class="dot sm" style="--c:var(--B)">B</span>→<span class="dot sm" style="--c:var(--A)">A</span>
+        · по 45 с
+      </div>
+      <div class="row-btns"><button class="btn primary" id="run-restart">▶ Прогон с начала</button></div>
+      <h3>Регламент</h3>
+      <ul class="rules">
+        <li>Время выполнения: <b>180 секунд</b>, трек: «Судьи готовы» → «Спортсмены готовы» → «Тон» → «15» → «30» → «Смена» … → «Тон».</li>
+        <li>Каждый участник обязан побывать и <b>вращающим</b>, и <b>прыгающим</b>.</li>
+        <li>Внутри скакалок одновременно — <b>только один</b> спортсмен.</li>
+        <li>Прыгающий должен <b>полностью выйти</b>, прежде чем его сменит партнёр.</li>
+        <li>Прыжки — чередование ног, «бег на месте».</li>
+        <li>Базовая крутка: правая рука — против часовой, левая — по часовой.</li>
+      </ul>
+    </div>
+  </aside>
+
+  <aside id="right" class="panel">
+    <h3 style="margin-top:2px">Спортсмены</h3>
+    <div id="athletes"></div>
+    <p class="hint">Нажми на спортсмена (здесь или в 3D), чтобы следить только за его маршрутом.</p>
+
+    <h3>Отображение</h3>
+    <label class="toggle"><input type="checkbox" id="opt-all"><span>Все траектории сразу</span></label>
+    <label class="toggle"><input type="checkbox" id="opt-ropes" checked><span>Скакалки</span></label>
+
+    <h3>Разбор ошибок</h3>
+    <label class="toggle err"><input type="checkbox" id="err-falseStart"><span>Фальстарт</span><button class="btn" data-show="falseStart">Показать</button></label>
+    <label class="toggle err"><input type="checkbox" id="err-early"><span>Вход раньше выхода</span><button class="btn" data-show="early">Показать</button></label>
+    <label class="toggle err"><input type="checkbox" id="err-wrong"><span>Обход не с той стороны</span><button class="btn" data-show="wrong">Показать</button></label>
+
+    <h3>Штрафы</h3>
+    <details>
+      <summary>Таблица штрафов</summary>
+      <div class="pen"><span>Нарушение пространства</span><b>5 б.</b></div>
+      <div class="pen"><span>Задержка соревнований</span><b>10 б.</b></div>
+      <div class="pen"><span>Незначительный фальстарт</span><b>5 б.</b></div>
+      <div class="pen"><span>Значительный фальстарт</span><b>20 б.</b></div>
+      <div class="pen"><span>Прыгают не все / схема не сохранена</span><b>0 баллов</b></div>
+      <div class="pen"><span>Костюм, потеря аксессуаров или очков</span><b>3 б.</b></div>
+    </details>
+    <p class="hint">Клавиши: пробел — пуск/пауза, ← → — шаги, 1–5 — камеры, H — панели.</p>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ============ Данные схемы ============ */
+const IDS = ['A','B','C','D'];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = {}; IDS.forEach(id => COL[id] = css('--'+id));
+const T_MIN = -8, T_MAX = 182;
+// 2D-координаты как на слайде: x — вправо, y — вверх (в 3D: z = -y)
+const P = { L:[-1.95,0], R:[1.95,0], M:[0,0], TL:[-1.9,1.45], BR:[1.9,-1.45] };
+const HANDLE_X = 1.6, HANDLE_Y = 1.05, ROPE_Z = 0.25;
+const faceTo = (from, to) => Math.atan2(to[1]-from[1], to[0]-from[0]);
+const inZone = p => Math.abs(p[0]) < 1.3 && Math.abs(p[1]) < 0.5;
+
+const CUES = [
+  {t:-7, say:'Судьи готовы'}, {t:-4, say:'Спортсмены готовы'}, {t:0, tone:true, big:'СТАРТ'},
+  {t:15,say:'15'},{t:30,say:'30'},{t:45,say:'Смена'},
+  {t:60,say:'15'},{t:75,say:'30'},{t:90,say:'Смена'},
+  {t:105,say:'15'},{t:120,say:'30'},{t:135,say:'Смена'},
+  {t:150,say:'15'},{t:165,say:'30'},{t:180, tone:true, big:'ФИНИШ'},
+];
+const SEGS = [{id:'C',a:0,b:45},{id:'D',a:45,b:90},{id:'B',a:90,b:135},{id:'A',a:135,b:180}];
+
+const tag = id => `<b style="background:var(--${id})">${id}</b>`;
+const STEPS = [
+  {from:-3.2, to:-0.4, title:'Исходная расстановка',
+   text:`${tag('A')} и ${tag('B')} — вращающие. ${tag('C')} стоит слева от ${tag('A')} и ждёт сигнала. ${tag('D')} стоит слева от ${tag('B')} лицом к ${tag('A')}.`},
+  {from:-0.4, to:3.2, title:'Старт: заходит C',
+   text:`По сигналу «Старт» скакалки начинают вращаться, ${tag('C')} заходит внутрь и прыгает «бегом на месте», глядя на ${tag('B')}.`},
+  {from:43.4, to:47.8, title:'Смена 1: C меняет B',
+   text:`По сигналу «Смена» ${tag('C')} выходит из скакалок и забирает вращение у ${tag('B')}. Только когда ${tag('C')} полностью вышел, ${tag('D')} заходит и прыгает лицом к ${tag('A')}.`},
+  {from:47.8, to:50.6, title:'B обходит справа',
+   text:`Пока прыгает ${tag('D')}, ${tag('B')} обходит ${tag('C')} с правой стороны и встаёт слева от ${tag('A')} — это его место для захода.`},
+  {from:88.4, to:92.8, title:'Смена 2: D меняет A',
+   text:`По сигналу «Смена» ${tag('D')} выходит и меняет ${tag('A')} на вращении. ${tag('B')} заходит в скакалки лицом к ${tag('C')}.`},
+  {from:92.8, to:95.6, title:'A обходит справа',
+   text:`Пока прыгает ${tag('B')}, ${tag('A')} обходит ${tag('D')} с правой стороны и встаёт слева от ${tag('C')}.`},
+  {from:133.4, to:137.8, title:'Смена 3: B меняет C',
+   text:`По сигналу «Смена» ${tag('B')} меняет ${tag('C')} на вращении, а ${tag('A')} заходит в скакалки лицом к ${tag('D')}. ${tag('C')} выходит из вращения.`},
+  {from:176.8, to:181.6, title:'Финиш',
+   text:`${tag('A')} прыгает до финального «Тона» на 180-й секунде. Все четверо побывали и вращающими, и прыгающими: C → D → B → A.`},
+];
+
+const err = { falseStart:false, early:false, wrong:false };
+let INIT, EV;
+
+function buildSchedule(){
+  INIT = {
+    A:{pos:P.L, role:'turnL', face:0},
+    B:{pos:P.R, role:'turnR', face:Math.PI},
+    C:{pos:P.TL, role:'wait', face:faceTo(P.TL,P.M)},
+    D:{pos:P.BR, role:'wait', face:Math.PI},
+  };
+  EV = {A:[],B:[],C:[],D:[]};
+  const add = (id,t0,t1,pts,label,endRole,endFace,flag=null) => EV[id].push({id,t0,t1,pts,label,endRole,endFace,flag});
+
+  const st = err.falseStart ? -1.7 : 0.25;
+  add('C', st, st+1.1, [P.TL,[-0.85,0.5],P.M], 'Заходит в скакалки', 'jump', 0, err.falseStart ? 'falseStart' : null);
+
+  // j — прыгающий, o — вращающий, которого меняют, n — следующий прыгающий, face — к кому лицом заходит n
+  const change = (t, j, o, n, side, face, opt={}) => {
+    const s = side === 'R' ? 1 : -1, m = p => [p[0]*s, p[1]*s];
+    add(j, t, t+1.4, [[0,0],[0.95,0.06],[1.95,0]].map(m), `Выходит и меняет ${o}`, side==='R'?'turnR':'turnL', side==='R'?Math.PI:0);
+    const fy = opt.wrong ? -1 : 1, mf = p => m([p[0], p[1]*fy]);
+    add(o, t+0.45, t+1.15, [[1.95,0],[2.25,0.22],[2.5,0.5]].map(mf), `Отдаёт вращение ${j}`, 'out', 0);
+    if (opt.final)
+      add(o, t+1.15, t+2.6, [[2.5,0.5],[2.6,0.95],[2.4,1.45]].map(m), 'Выходит из вращения', 'done', faceTo(m([2.4,1.45]),P.M));
+    else if (opt.wrong)
+      add(o, t+1.15, t+7.2, [[2.5,-0.5],[2.6,-1.6],[1.3,-2.4],[-0.5,-2.45],[-2.1,-2.05],[-2.85,-0.9],[-2.8,0.6],[-1.9,1.45]].map(m),
+          `Обходит НЕ с той стороны!`, 'wait', faceTo(m(P.TL),P.M), 'wrong');
+    else
+      add(o, t+1.15, t+5.0, [[2.5,0.5],[2.65,1.45],[1.3,2.35],[-0.5,2.4],[-1.75,2.1],[-1.9,1.45]].map(m),
+          `Обходит ${j} справа → слева от ${face}`, 'wait', faceTo(m(P.TL),P.M));
+    const ne = opt.early ? t-0.15 : t+1.45;
+    add(n, ne, ne+1.1, [[1.9,-1.45],[0.95,-0.62],[0,0]].map(m), `Заходит, лицом к ${face}`, 'jump', side==='R'?Math.PI:0, opt.early?'early':null);
+  };
+  change(45,  'C','B','D','R','A', {early:err.early, wrong:err.wrong});
+  change(90,  'D','A','B','L','C');
+  change(135, 'B','C','A','R','D', {final:true});
+
+  for (const id of IDS) for (const e of EV[id]) {
+    e.curve = new THREE.CatmullRomCurve3(e.pts.map(p => new THREE.Vector3(p[0],0,-p[1])), false, 'centripetal');
+    e.len = e.curve.getLength();
+  }
+}
+
+const ease = k => k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
+const smooth = k => k<=0?0:k>=1?1:k*k*(3-2*k);
+const lerpAng = (a,b,k) => { let d = ((b-a)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI; return a + d*k; };
+
+function stateAt(id, t){
+  let cur = {...INIT[id], moving:false, ev:null};
+  for (const e of EV[id]) {
+    if (t < e.t0) break;
+    if (t <= e.t1) {
+      const k = (t-e.t0)/(e.t1-e.t0), u = ease(k);
+      const p = e.curve.getPointAt(u), tg = e.curve.getTangentAt(u);
+      const ta = Math.atan2(-tg.z, tg.x);
+      let face = ta;
+      if (k < .2) face = lerpAng(cur.face, ta, smooth(k/.2));
+      if (k > .72) face = lerpAng(ta, e.endFace, smooth((k-.72)/.28));
+      return {pos:[p.x,-p.z], face, role:'move', moving:true, ev:e, walk:u*e.len/0.62*Math.PI};
+    }
+    cur = {pos:e.pts[e.pts.length-1], face:e.endFace, role:e.endRole, moving:false, ev:null};
+  }
+  return cur;
+}
+
+const ROLE_TXT = {turnL:'Вращает (слева)', turnR:'Вращает (справа)', jump:'Прыгает', wait:'Ждёт свой заход', done:'Закончил вращение', out:'Выходит'};
+
+/* ============ Время вращения ============ */
+const OMEGA = Math.PI*2*1.55;
+function ropeProgress(t){ // интеграл скорости (разгон 0–0.6 c, остановка 180–181 c)
+  if (t <= 0) return 0;
+  if (t < 0.6) return t*t/1.2;
+  if (t < 180) return 0.3 + (t-0.6);
+  if (t < 181) { const d=t-180; return 179.7 + d - d*d/2; }
+  return 180.2;
+}
+
+/* ============ Three.js ============ */
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 120);
+camera.position.set(6.4,5.2,7.2);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = .08;
+controls.maxPolarAngle = Math.PI*0.495; controls.minDistance = 1.5; controls.maxDistance = 26;
+controls.target.set(0,0.6,0);
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x445066, 0.95); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 1.7);
+sun.position.set(4,10,6); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera, {left:-7,right:7,top:7,bottom:-7,near:1,far:30});
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0xc9e2ff, 0.5); rim.position.set(-6,4,-6); scene.add(rim);
+
+const V = (x=0,y=0,z=0) => new THREE.Vector3(x,y,z);
+const UP = V(0,1,0);
+const W = p => V(p[0],0,-p[1]);
+
+// --- пол и разметка
+const floorMat = new THREE.MeshStandardMaterial({roughness:.9});
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80,80), floorMat);
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+const courtMat = new THREE.MeshStandardMaterial({roughness:.75});
+const court = new THREE.Mesh(new THREE.PlaneGeometry(8.4,6.6), courtMat);
+court.rotation.x = -Math.PI/2; court.position.y = 0.002; court.receiveShadow = true; scene.add(court);
+const lineMat = new THREE.LineBasicMaterial({transparent:true});
+{
+  const g = [];
+  for (let x=-4.2; x<=4.21; x+=0.6) g.push(x,0.004,-3.3, x,0.004,3.3);
+  for (let z=-3.3; z<=3.31; z+=0.6) g.push(-4.2,0.004,z, 4.2,0.004,z);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g,3));
+  scene.add(new THREE.LineSegments(geo, lineMat));
+}
+const borderMat = new THREE.LineBasicMaterial({transparent:true});
+{
+  const b = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([V(-4.2,.005,-3.3),V(4.2,.005,-3.3),V(4.2,.005,3.3),V(-4.2,.005,3.3)]), borderMat);
+  scene.add(b);
+}
+// зона скакалок
+const zoneMat = new THREE.MeshBasicMaterial({color:0x0d5db8, transparent:true, opacity:.10, depthWrite:false});
+const zone = new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.0), zoneMat);
+zone.rotation.x = -Math.PI/2; zone.position.y = 0.006; scene.add(zone);
+// места (станции)
+const spotMat = new THREE.MeshBasicMaterial({transparent:true, opacity:.5, depthWrite:false});
+for (const p of [P.L,P.R,P.TL,P.BR]) {
+  const r = new THREE.Mesh(new THREE.RingGeometry(0.4,0.43,48), spotMat);
+  r.rotation.x = -Math.PI/2; r.position.copy(W(p)).setY(0.007); scene.add(r);
+}
+
+// --- скакалки
+class Rope {
+  constructor(color, z){
+    this.z = z; this.SEG = 90; this.RAD = 8;
+    const n = (this.SEG+1)*this.RAD;
+    this.pos = new Float32Array(n*3);
+    const idx = [];
+    for (let i=0;i<this.SEG;i++) for (let j=0;j<this.RAD;j++){
+      const a=i*this.RAD+j, b=i*this.RAD+(j+1)%this.RAD, c=(i+1)*this.RAD+j, d=(i+1)*this.RAD+(j+1)%this.RAD;
+      idx.push(a,c,b, b,c,d);
+    }
+    this.geo = new THREE.BufferGeometry();
+    this.geo.setAttribute('position', new THREE.BufferAttribute(this.pos,3));
+    this.geo.setIndex(idx);
+    this.mat = new THREE.MeshStandardMaterial({color, roughness:.35, emissive:color, emissiveIntensity:.25});
+    this.mesh = new THREE.Mesh(this.geo, this.mat); this.mesh.castShadow = true; this.mesh.frustumCulled = false;
+    scene.add(this.mesh);
+    const hg = new THREE.CylinderGeometry(0.028,0.028,0.17,12); hg.rotateZ(Math.PI/2);
+    const hm = new THREE.MeshStandardMaterial({color:0x1f2430, roughness:.5});
+    this.hL = new THREE.Mesh(hg,hm); this.hR = new THREE.Mesh(hg,hm);
+    this.hL.castShadow = this.hR.castShadow = true;
+    scene.add(this.hL, this.hR);
+    this.P = Array.from({length:this.SEG+1}, ()=>V());
+  }
+  update(theta){
+    const dy = Math.sin(theta), dz = Math.cos(theta), HR = 0.13, AMP = 1.18;
+    const d = V(0,dy,dz);
+    for (let i=0;i<=this.SEG;i++){
+      const u = i/this.SEG, off = HR + (AMP-HR)*Math.sin(Math.PI*u);
+      const p = this.P[i];
+      p.set(-HANDLE_X + 2*HANDLE_X*u, HANDLE_Y + off*dy, this.z + off*dz);
+      if (p.y < 0.022) p.y = 0.022;
+    }
+    const T=V(), N=V(), B=V(), r=0.017;
+    for (let i=0;i<=this.SEG;i++){
+      const a=this.P[Math.max(0,i-1)], b=this.P[Math.min(this.SEG,i+1)];
+      T.subVectors(b,a).normalize();
+      N.crossVectors(T,d).normalize(); B.crossVectors(T,N).normalize();
+      for (let j=0;j<this.RAD;j++){
+        const ang = j/this.RAD*Math.PI*2, c=Math.cos(ang)*r, s=Math.sin(ang)*r, k=(i*this.RAD+j)*3;
+        this.pos[k]   = this.P[i].x + N.x*c + B.x*s;
+        this.pos[k+1] = this.P[i].y + N.y*c + B.y*s;
+        this.pos[k+2] = this.P[i].z + N.z*c + B.z*s;
+      }
+    }
+    this.geo.attributes.position.needsUpdate = true;
+    this.geo.computeVertexNormals();
+    this.hL.position.set(this.P[0].x-0.07, this.P[0].y, this.P[0].z);
+    this.hR.position.set(this.P[this.SEG].x+0.07, this.P[this.SEG].y, this.P[this.SEG].z);
+    this.endL = this.P[0]; this.endR = this.P[this.SEG];
+  }
+  set visible(v){ this.mesh.visible = this.hL.visible = this.hR.visible = v; }
+}
+// rope1 — у левой руки A (z<0), rope2 — у правой руки A (z>0)
+const rope1 = new Rope(new THREE.Color(css('--rope1')), -ROPE_Z);
+const rope2 = new Rope(new THREE.Color(css('--rope2')), ROPE_Z);
+
+// --- спортсмены
+const limbGeo = new THREE.CylinderGeometry(0.85,1,1,14);
+const sphGeo = new THREE.SphereGeometry(1,16,12);
+function limb(mesh,a,b,r){
+  const d = V().subVectors(b,a), len = d.length();
+  mesh.position.copy(a).addScaledVector(d,.5);
+  mesh.scale.set(r,len,r);
+  mesh.quaternion.setFromUnitVectors(UP, d.divideScalar(len||1));
+}
+function ik(a, b, l1, l2, hint){
+  const d = V().subVectors(b,a); let dist = d.length();
+  const max = l1+l2-1e-3;
+  if (dist > max){ d.setLength(max); dist = max; }
+  const end = V().addVectors(a,d), dir = d.clone().normalize();
+  const x = (l1*l1 - l2*l2 + dist*dist)/(2*dist), h = Math.sqrt(Math.max(0,l1*l1-x*x));
+  const perp = hint.clone().addScaledVector(dir, -hint.dot(dir)).normalize();
+  return { mid: V().copy(a).addScaledVector(dir,x).addScaledVector(perp,h), end };
+}
+function labelTex(id){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.beginPath(); g.arc(64,64,56,0,Math.PI*2); g.fillStyle = COL[id]; g.fill();
+  g.lineWidth = 8; g.strokeStyle = '#fff'; g.stroke();
+  g.fillStyle = '#fff'; g.font = '800 70px "Inter Variable", system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(id, 64, 68);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+class Athlete {
+  constructor(id){
+    this.id = id; this.meshes = [];
+    const col = new THREE.Color(COL[id]);
+    this.mShirt = new THREE.MeshStandardMaterial({color:col, roughness:.5});
+    this.mSkin  = new THREE.MeshStandardMaterial({color:0xe7b793, roughness:.7});
+    this.mDark  = new THREE.MeshStandardMaterial({color:0x242a36, roughness:.8});
+    this.mShoe  = new THREE.MeshStandardMaterial({color:0xf2f3f5, roughness:.6});
+    this.mats = [this.mShirt,this.mSkin,this.mDark,this.mShoe];
+    const mk = (geo,mat) => { const m = new THREE.Mesh(geo,mat); m.castShadow = true; m.userData.id = id; scene.add(m); this.meshes.push(m); return m; };
+    this.torso = mk(new THREE.CapsuleGeometry(0.15,0.34,6,16), this.mShirt);
+    this.pelvis = mk(sphGeo, this.mDark); this.pelvis.scale.set(.16,.13,.16);
+    this.neck = mk(limbGeo, this.mSkin);
+    this.head = mk(sphGeo, this.mSkin); this.head.scale.setScalar(.115);
+    this.cap = mk(new THREE.SphereGeometry(.122,20,10,0,Math.PI*2,0,Math.PI/2), this.mShirt);
+    this.brim = mk(new THREE.BoxGeometry(.13,.016,.17), this.mShirt);
+    this.L = {}; this.R = {};
+    for (const s of [this.L,this.R]){
+      s.ua = mk(limbGeo,this.mShirt); s.fa = mk(limbGeo,this.mSkin);
+      s.el = mk(sphGeo,this.mSkin); s.el.scale.setScalar(.046);
+      s.hand = mk(sphGeo,this.mSkin); s.hand.scale.setScalar(.05);
+      s.sh = mk(sphGeo,this.mShirt); s.sh.scale.setScalar(.065);
+      s.th = mk(limbGeo,this.mDark); s.sn = mk(limbGeo,this.mSkin);
+      s.kn = mk(sphGeo,this.mSkin); s.kn.scale.setScalar(.06);
+      s.shoe = mk(new THREE.BoxGeometry(.25,.075,.105), this.mShoe);
+    }
+    // метка на полу
+    this.marker = new THREE.Group();
+    this.mMark = new THREE.MeshBasicMaterial({color:col, transparent:true, opacity:.9, depthWrite:false});
+    const ring = new THREE.Mesh(new THREE.RingGeometry(.3,.36,48), this.mMark); ring.rotation.x = -Math.PI/2;
+    const sh = new THREE.Shape(); sh.moveTo(.62,0); sh.lineTo(.42,.11); sh.lineTo(.42,-.11); sh.closePath();
+    const arr = new THREE.Mesh(new THREE.ShapeGeometry(sh), this.mMark); arr.rotation.x = -Math.PI/2;
+    this.marker.add(ring, arr); scene.add(this.marker);
+    this.label = new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(id), depthTest:false, transparent:true}));
+    this.label.scale.setScalar(.36); this.label.renderOrder = 10; scene.add(this.label);
+    this.opacity = 1;
+  }
+  setOpacity(o){
+    if (Math.abs(o-this.opacity) < .001) return;
+    this.opacity = o;
+    for (const m of this.mats){ m.opacity = o; m.transparent = o < .999; m.depthWrite = o >= .999; m.needsUpdate = true; }
+    this.mMark.opacity = .9*o; this.label.material.opacity = Math.max(o,.35);
+  }
+  pose(s, t, alpha){
+    const root = W(s.pos), a = s.face;
+    const f = V(Math.cos(a),0,-Math.sin(a)), r = V(Math.sin(a),0,Math.cos(a));
+    let bob = 0, lean = 0, feetW = .11;
+    const lift = {L:0,R:0}, fwd = {L:0,R:0};
+    const running = t > 0 && t < 180;
+    let mode = s.moving ? 'walk' : (s.role==='jump' && running) ? 'jump' : (s.role==='turnL'||s.role==='turnR') ? 'turn' : 'idle';
+    if (mode==='walk'){
+      const ph = s.walk;
+      fwd.L = .2*Math.sin(ph); fwd.R = -fwd.L;
+      lift.L = Math.max(0,Math.cos(ph))*.09; lift.R = Math.max(0,-Math.cos(ph))*.09;
+      bob = .025*Math.abs(Math.cos(ph)); lean = .05;
+    } else if (mode==='jump'){
+      const c = Math.cos(alpha);
+      lift.L = Math.pow(Math.max(0,c),2)*.24; lift.R = Math.pow(Math.max(0,-c),2)*.24;
+      fwd.L = lift.L*.25; fwd.R = lift.R*.25;
+      bob = .035 + .05*Math.abs(c); lean = .04;
+    } else if (mode==='turn'){
+      bob = -.06; lean = .07; feetW = .17;
+    } else {
+      bob = .006*Math.sin(t*2.2 + this.id.charCodeAt(0));
+    }
+    const pelvis = root.clone().addScaledVector(UP,.92+bob);
+    const chest = root.clone().addScaledVector(UP,1.33+bob).addScaledVector(f,lean);
+    const torsoMid = pelvis.clone().lerp(chest,.5);
+    this.torso.position.copy(torsoMid);
+    this.torso.quaternion.setFromUnitVectors(UP, V().subVectors(chest,pelvis).normalize());
+    this.pelvis.position.copy(pelvis);
+    const neckTop = chest.clone().addScaledVector(UP,.2).addScaledVector(f,lean*.4);
+    limb(this.neck, chest, neckTop, .05);
+    const head = neckTop.clone().addScaledVector(UP,.1);
+    this.head.position.copy(head);
+    this.cap.position.copy(head).addScaledVector(UP,.02);
+    this.brim.position.copy(head).addScaledVector(UP,.035).addScaledVector(f,.12);
+    this.brim.rotation.set(0,a,0);
+    this.label.position.copy(head).addScaledVector(UP,.42);
+    this.marker.position.set(root.x,.012,root.z); this.marker.rotation.y = a;
+    this.headPos = head; this.fwd = f;
+
+    // руки
+    let handT = {};
+    if (mode==='turn'){
+      const ends = s.role==='turnL' ? [rope1.endL, rope2.endL] : [rope1.endR, rope2.endR];
+      for (const e of ends) handT[V().subVectors(e,root).dot(r) < 0 ? 'L' : 'R'] = e.clone().addScaledVector(f,-.02);
+    }
+    for (const side of ['L','R']){
+      const sg = side==='L' ? -1 : 1, S = this[side];
+      const sho = chest.clone().addScaledVector(UP,.06).addScaledVector(r,sg*.2);
+      S.sh.position.copy(sho);
+      let hand, hint;
+      if (mode==='turn' && handT[side]){ hand = handT[side]; hint = V().addScaledVector(UP,-.7).addScaledVector(r,sg*.5).addScaledVector(f,-.3); }
+      else if (mode==='jump'){
+        const sw = Math.sin(alpha)*(sg) * .08;
+        hand = sho.clone().addScaledVector(UP,-.36).addScaledVector(f,.2+sw).addScaledVector(r,sg*.02);
+        hint = V().addScaledVector(f,-.6).addScaledVector(UP,-.3).addScaledVector(r,sg*.4);
+      } else if (mode==='walk'){
+        hand = sho.clone().addScaledVector(UP,-.52).addScaledVector(f,-fwd[side]*.9).addScaledVector(r,sg*.05);
+        hint = V().addScaledVector(f,-.5).addScaledVector(UP,-.2).addScaledVector(r,sg*.3);
+      } else {
+        hand = sho.clone().addScaledVector(UP,-.54).addScaledVector(f,.05).addScaledVector(r,sg*.06);
+        hint = V().addScaledVector(f,-.4).addScaledVector(r,sg*.5);
+      }
+      const k = ik(sho, hand, .3, .3, hint);
+      limb(S.ua, sho, k.mid, .052); limb(S.fa, k.mid, k.end, .042);
+      S.el.position.copy(k.mid); S.hand.position.copy(k.end);
+      // ноги
+      const hip = pelvis.clone().addScaledVector(r,sg*.1).addScaledVector(UP,-.03);
+      const foot = root.clone().addScaledVector(r,sg*feetW).addScaledVector(f,fwd[side]).addScaledVector(UP,.04+lift[side]);
+      const ankle = foot.clone().addScaledVector(UP,.05);
+      const kk = ik(hip, ankle, .45, .45, f.clone().addScaledVector(r,sg*.15));
+      limb(S.th, hip, kk.mid, .078); limb(S.sn, kk.mid, kk.end, .056);
+      S.kn.position.copy(kk.mid);
+      S.shoe.position.copy(kk.end).addScaledVector(UP,-.045).addScaledVector(f,.05);
+      S.shoe.rotation.set(0,a,0);
+    }
+  }
+}
+const ATH = {}; IDS.forEach(id => ATH[id] = new Athlete(id));
+
+/* ============ Траектории ============ */
+let pathObjs = [];
+const coneGeo = new THREE.ConeGeometry(.1,.26,16);
+const dotGeo = new THREE.SphereGeometry(.07,14,10);
+const mini = document.getElementById('mini');
+const SVGNS = 'http://www.w3.org/2000/svg';
+function buildPaths(){
+  for (const o of pathObjs){ scene.remove(o.tube, o.cone, o.dot); o.tube.geometry.dispose(); o.svg.remove(); }
+  pathObjs = [];
+  for (const id of IDS) for (const e of EV[id]){
+    const c3 = new THREE.CatmullRomCurve3(e.pts.map(p => V(p[0],.03,-p[1])), false, 'centripetal');
+    const mat = new THREE.MeshBasicMaterial({color:COL[id], transparent:true, opacity:0, depthWrite:false});
+    if (e.flag==='wrong') mat.color.set(css('--danger'));
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(c3,80,.03,6,false), mat);
+    const cone = new THREE.Mesh(coneGeo, mat);
+    const end = c3.getPoint(1), tg = c3.getTangent(1);
+    cone.position.copy(end).addScaledVector(tg,-.04); cone.quaternion.setFromUnitVectors(UP,tg);
+    const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0, depthWrite:false}));
+    tube.renderOrder = cone.renderOrder = dot.renderOrder = 2;
+    scene.add(tube,cone,dot);
+    const sp = c3.getSpacedPoints(40).map(p => `${p.x.toFixed(3)},${p.z.toFixed(3)}`).join(' ');
+    const svg = document.createElementNS(SVGNS,'polyline');
+    svg.setAttribute('points', sp); svg.setAttribute('fill','none');
+    svg.setAttribute('stroke', e.flag==='wrong' ? css('--danger') : COL[id]); svg.setAttribute('stroke-width','.06');
+    svg.setAttribute('stroke-linecap','round'); svg.setAttribute('stroke-dasharray','.16 .1'); svg.setAttribute('marker-end',`url(#ar-${e.flag==='wrong'?'X':id})`);
+    svg.style.opacity = 0;
+    miniPaths.appendChild(svg);
+    pathObjs.push({e, id, c3, tube, cone, dot, mat, svg});
+  }
+}
+
+/* ============ Мини-схема (как на слайде) ============ */
+mini.innerHTML = `
+  <defs>${[...IDS,'X'].map(id=>`<marker id="ar-${id}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0 0L10 5L0 10z" fill="${id==='X'?css('--danger'):COL[id]}"/></marker>`).join('')}</defs>
+  <rect id="m-zone" x="-1.3" y="-.5" width="2.6" height="1" rx=".2" fill="currentColor" opacity=".06"/>
+  <path d="M-1.6 0 Q0 -1.15 1.6 0" fill="none" stroke="var(--rope1)" stroke-width=".05" opacity=".8"/>
+  <path d="M-1.6 0 Q0 1.15 1.6 0" fill="none" stroke="var(--rope2)" stroke-width=".05" opacity=".8"/>
+  <g id="m-paths"></g>
+  <g id="m-ath">${IDS.map(id=>`<g id="m-${id}"><circle r=".3" fill="${COL[id]}" stroke="var(--panel-solid)" stroke-width=".05"/><path d="M.34 0L.22 .09L.22 -.09z" fill="${COL[id]}"/><text text-anchor="middle" dy=".12" font-size=".32" font-weight="800" fill="#fff" font-family="Inter Variable,sans-serif">${id}</text></g>`).join('')}</g>`;
+mini.style.color = 'var(--text)';
+const miniPaths = mini.querySelector('#m-paths');
+const miniZone = mini.querySelector('#m-zone');
+
+/* ============ Тема ============ */
+function isDark(){
+  const a = document.documentElement.dataset.theme;
+  return a ? a==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function applyTheme(){
+  const d = isDark();
+  const bg = new THREE.Color(d ? 0x061527 : 0xf1f7ff);
+  scene.background = bg; scene.fog = new THREE.Fog(bg, 16, 40);
+  floorMat.color.set(d ? 0x0a213d : 0xe3f0ff);
+  courtMat.color.set(d ? 0x12365f : 0xffffff);
+  lineMat.color.set(d ? 0xffffff : 0x0b1727); lineMat.opacity = d ? .05 : .07;
+  borderMat.color.set(d ? 0xffffff : 0x0b1727); borderMat.opacity = d ? .3 : .35;
+  spotMat.color.set(d ? 0xffffff : 0x0b1727); spotMat.opacity = d ? .25 : .25;
+  hemi.intensity = d ? .7 : .95; sun.intensity = d ? 1.5 : 1.7;
+  rope1.mat.color.set(css('--rope1')); rope1.mat.emissive.set(css('--rope1'));
+  rope2.mat.color.set(css('--rope2')); rope2.mat.emissive.set(css('--rope2'));
+  for (const o of pathObjs) o.dot.material.color.set(d ? 0xffffff : 0x0b1727);
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+/* ============ Камера ============ */
+const CAMS = {
+  top:  {pos:V(0,12.2,1.8), tgt:V(0,0,-.2)},
+  hero: {pos:V(6.4,5.2,7.2), tgt:V(0,.6,0)},
+  judge:{pos:V(0,3.2,8.4), tgt:V(0,.8,0)},
+  side: {pos:V(-7.8,2.6,2.4), tgt:V(0,.8,0)},
+};
+let camMode = 'hero', tween = null;
+function fitFactor(){ const a = camera.aspect; return a < 1.35 ? Math.min(2.1, 1.35/a) : 1; }
+function setCam(m){
+  camMode = m;
+  document.querySelectorAll('#cams button').forEach(b => b.classList.toggle('on', b.dataset.cam===m));
+  if (m==='pov'){ controls.enabled = false; tween = null; return; }
+  const c = CAMS[m], f = fitFactor();
+  const to = c.tgt.clone().add(c.pos.clone().sub(c.tgt).multiplyScalar(f));
+  tween = {fp:camera.position.clone(), ft:controls.target.clone(), tp:to, tt:c.tgt.clone(), k:0};
+  controls.enabled = false;
+}
+
+/* ============ Звук ============ */
+let sound = true, actx = null;
+function beep(){
+  try {
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.frequency.value = 1046; o.type = 'sine';
+    g.gain.setValueAtTime(0, actx.currentTime);
+    g.gain.linearRampToValueAtTime(.3, actx.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.001, actx.currentTime+.7);
+    o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+.75);
+  } catch(e){}
+}
+let ruVoice = null;
+function pickVoice(){ try { ruVoice = speechSynthesis.getVoices().find(v => /^ru/i.test(v.lang)) || null; } catch(e){} }
+if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function say(text){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; u.rate = 1.1; if (ruVoice) u.voice = ruVoice;
+  speechSynthesis.speak(u);
+}
+const cueEl = document.getElementById('cue'); let cueTimer;
+function fireCue(c){
+  cueEl.textContent = c.big || c.say;
+  cueEl.classList.add('show'); clearTimeout(cueTimer);
+  cueTimer = setTimeout(()=>cueEl.classList.remove('show'), 1100);
+  if (sound){ c.tone ? beep() : say(c.say); }
+}
+
+/* ============ Состояние воспроизведения ============ */
+let t = -1.2, playing = false, speed = 1, mode = 'steps', stepIdx = 0, stepTarget = null, selected = null, showAll = false;
+const S = {};
+
+function currentJumper(tt){ if (tt < 0) return null; const s = SEGS.find(s => tt < s.b) ; return s ? s.id : null; }
+
+/* ============ UI ============ */
+const $ = id => document.getElementById(id);
+const fmt = tt => { const neg = tt < 0, a = Math.abs(tt); const m = Math.floor(a/60), s = Math.floor(a%60); return (neg?'−':'')+m+':'+String(s).padStart(2,'0'); };
+const dotHTML = (id, sm) => `<span class="dot${sm?' sm':''}" style="--c:var(--${id})">${id}</span>`;
+
+// таймлайн
+const track = $('track'), tl = $('tl'), headEl = $('head');
+const pct = tt => (tt - T_MIN)/(T_MAX - T_MIN)*100;
+{
+  const parts = [{a:T_MIN,b:0,c:'var(--line)',txt:''}, ...SEGS.map(s=>({a:s.a,b:s.b,c:`var(--${s.id})`,txt:s.id})), {a:180,b:T_MAX,c:'var(--line)',txt:''}];
+  for (const p of parts){ const d = document.createElement('div'); d.className='seg'; d.style.width = (pct(p.b)-pct(p.a))+'%'; d.style.background = p.c; d.textContent = p.txt; track.appendChild(d); }
+  for (const c of CUES.filter(c=>c.t>=0)){
+    const d = document.createElement('div'); d.className = 'tick' + (c.say==='Смена'||c.tone?' ch':'');
+    d.style.left = pct(c.t)+'%'; d.textContent = c.t===0?'0':c.t===180?'180':(c.say==='Смена'?'Смена':''); if(d.textContent) tl.appendChild(d);
+  }
+  STEPS.forEach((s,i) => { const d = document.createElement('button'); d.className='sdot'; d.style.left = pct(Math.max(T_MIN,s.from))+'%'; d.textContent = i+1; d.title = 'Шаг '+(i+1)+': '+s.title;
+    d.addEventListener('pointerdown', e => { e.stopPropagation(); setMode('steps'); goStep(i); }); tl.appendChild(d); });
+}
+let scrubbing = false;
+function scrubTo(e){ const r = tl.getBoundingClientRect(); t = T_MIN + Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))*(T_MAX-T_MIN); stepTarget = null; }
+tl.addEventListener('pointerdown', e => { scrubbing = true; tl.setPointerCapture(e.pointerId); playing = false; scrubTo(e); });
+tl.addEventListener('pointermove', e => { if (scrubbing) scrubTo(e); });
+tl.addEventListener('pointerup', () => scrubbing = false);
+
+// шаги
+const chips = $('chips');
+STEPS.forEach((s,i) => { const b = document.createElement('button'); b.textContent = i+1; b.title = s.title; b.onclick = () => goStep(i); chips.appendChild(b); });
+function renderStep(){
+  const s = STEPS[stepIdx];
+  $('step-n').textContent = `Шаг ${stepIdx+1} из ${STEPS.length}`;
+  $('step-title').textContent = s.title;
+  $('step-text').innerHTML = s.text;
+  [...chips.children].forEach((b,i) => { b.classList.toggle('on', i===stepIdx); b.classList.toggle('done', i<stepIdx); });
+  document.querySelectorAll('.sdot').forEach((b,i) => b.classList.toggle('on', mode==='steps' && i===stepIdx));
+  $('step-prev').disabled = stepIdx===0;
+  $('step-next').textContent = stepIdx===STEPS.length-1 ? '↻ С начала' : 'Дальше →';
+}
+function goStep(i){
+  stepIdx = (i+STEPS.length)%STEPS.length;
+  const s = STEPS[stepIdx]; t = s.from; stepTarget = s.to; playing = true; unlockAudio();
+  renderStep();
+}
+$('step-prev').onclick = () => stepIdx>0 && goStep(stepIdx-1);
+$('step-next').onclick = () => goStep(stepIdx+1);
+$('step-again').onclick = () => goStep(stepIdx);
+$('prev').onclick = () => mode==='steps' ? (stepIdx>0 && goStep(stepIdx-1)) : (t = Math.max(T_MIN, t-5));
+$('next').onclick = () => mode==='steps' ? goStep(stepIdx+1) : (t = Math.min(T_MAX, t+5));
+
+function setMode(m){
+  mode = m;
+  $('tab-steps').classList.toggle('on', m==='steps'); $('tab-run').classList.toggle('on', m==='run');
+  $('pane-steps').hidden = m!=='steps'; $('pane-run').hidden = m!=='run';
+  $('prev').title = m==='steps' ? 'Предыдущий шаг (←)' : 'Назад на 5 с (←)';
+  $('next').title = m==='steps' ? 'Следующий шаг (→)' : 'Вперёд на 5 с (→)';
+  stepTarget = null; renderStep();
+}
+$('tab-steps').onclick = () => { setMode('steps'); goStep(stepIdx); };
+$('tab-run').onclick = () => { setMode('run'); t = T_MIN; playing = false; };
+$('run-restart').onclick = () => { setMode('run'); t = T_MIN; playing = true; unlockAudio(); };
+
+function unlockAudio(){ if (sound && !actx) try { actx = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} }
+function togglePlay(){
+  unlockAudio();
+  if (playing){ playing = false; return; }
+  if (mode==='steps'){
+    if (stepTarget===null || t >= STEPS[stepIdx].to - .01){ goStep(t >= STEPS[stepIdx].to - .01 ? stepIdx+1 : stepIdx); return; }
+    playing = true;
+  } else { if (t >= T_MAX) t = T_MIN; playing = true; }
+}
+$('play').onclick = togglePlay;
+
+document.querySelectorAll('#speed button').forEach(b => b.onclick = () => {
+  speed = +b.dataset.s; document.querySelectorAll('#speed button').forEach(x => x.classList.toggle('on', x===b));
+});
+document.querySelectorAll('#cams button').forEach(b => b.onclick = () => setCam(b.dataset.cam));
+$('btn-sound').onclick = () => { sound = !sound; $('btn-sound').classList.toggle('on', sound); $('snd-wave').style.display = sound?'':'none'; if(!sound && 'speechSynthesis' in window) speechSynthesis.cancel(); };
+$('btn-theme').onclick = () => { document.documentElement.dataset.theme = isDark() ? 'light' : 'dark'; applyTheme(); refreshSvgColors(); };
+$('btn-panels').onclick = () => document.body.classList.toggle('hide-panels');
+$('opt-all').onchange = e => showAll = e.target.checked;
+$('opt-ropes').onchange = e => { rope1.visible = rope2.visible = e.target.checked; };
+function refreshSvgColors(){ /* цвета мини-схемы через CSS-переменные — обновляются сами */ }
+
+// ошибки
+const ERR_MAP = {falseStart:'err-falseStart', early:'err-early', wrong:'err-wrong'};
+const ERR_JUMP = {falseStart:-4.2, early:43.6, wrong:44.2};
+for (const [k,idv] of Object.entries(ERR_MAP)){
+  $(idv).onchange = e => { err[k] = e.target.checked; buildSchedule(); buildPaths(); applyTheme(); };
+}
+document.querySelectorAll('[data-show]').forEach(b => b.onclick = e => {
+  e.preventDefault(); const k = b.dataset.show;
+  if (!err[k]){ err[k] = true; $(ERR_MAP[k]).checked = true; buildSchedule(); buildPaths(); applyTheme(); }
+  setMode('run'); t = ERR_JUMP[k]; playing = true; stepTarget = (k==='wrong') ? 53.5 : (k==='early' ? 48.5 : 2.5); unlockAudio();
+  if (k!=='falseStart') setCam(k==='wrong' ? 'top' : 'judge'); else setCam('judge');
+});
+
+// карточки спортсменов
+const athEl = $('athletes');
+for (const id of IDS){
+  const b = document.createElement('button'); b.className = 'arow'; b.id = 'row-'+id;
+  b.innerHTML = `${dotHTML(id)}<div class="txt"><b>Спортсмен ${id}</b><small id="role-${id}">—</small></div><span class="face" id="face-${id}"></span>`;
+  b.onclick = () => select(id); athEl.appendChild(b);
+}
+function select(id){
+  selected = selected===id ? null : id;
+  IDS.forEach(x => $('row-'+x).classList.toggle('sel', x===selected));
+}
+
+// клик по 3D
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let downXY = null;
+canvas.addEventListener('pointerdown', e => downXY = [e.clientX,e.clientY]);
+canvas.addEventListener('pointerup', e => {
+  if (!downXY || Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]) > 5) return;
+  const r = canvas.getBoundingClientRect();
+  mouse.set((e.clientX-r.left)/r.width*2-1, -(e.clientY-r.top)/r.height*2+1);
+  ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(IDS.flatMap(id => ATH[id].meshes))[0];
+  if (hit) select(hit.object.userData.id); else if (selected) select(selected);
+});
+
+addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input')) return;
+  if (e.code==='Space'){ e.preventDefault(); togglePlay(); }
+  else if (e.key==='ArrowRight') $('next').click();
+  else if (e.key==='ArrowLeft') $('prev').click();
+  else if ('12345'.includes(e.key) && e.key.length===1) setCam(['top','hero','judge','side','pov'][+e.key-1]);
+  else if (e.key==='h' || e.key==='H' || e.key==='р' || e.key==='Р') document.body.classList.toggle('hide-panels');
+});
+
+/* ============ Обновление мира ============ */
+const LOOK = 4;
+let warnUntil = 0, lastWarn = '';
+function updateWorld(tt, now){
+  const prog = ropeProgress(tt), alpha = OMEGA*prog;
+  const sRamp = smooth(Math.min(1, Math.max(0,tt)/0.6));
+  let th1 = -alpha - Math.PI/2, th2 = alpha - Math.PI/2 + Math.PI*sRamp;
+  if (tt > 180){ const b = smooth((tt-180)/1.6); th1 = lerpAng(th1,-Math.PI/2,b); th2 = lerpAng(th2,-Math.PI/2,b); }
+  rope1.update(th1); rope2.update(th2);
+
+  for (const id of IDS){ S[id] = stateAt(id, tt); }
+  for (const id of IDS){
+    ATH[id].pose(S[id], tt, alpha + (id.charCodeAt(0)%2)*0);
+    ATH[id].setOpacity(selected && selected!==id ? .22 : 1);
+    const pulse = selected===id ? 1 + .08*Math.sin(now/180) : 1;
+    ATH[id].marker.scale.setScalar(pulse);
+  }
+
+  // траектории
+  for (const o of pathObjs){
+    const e = o.e; let op = 0;
+    if (tt >= e.t0-LOOK && tt < e.t0) op = .3 + .6*((tt-(e.t0-LOOK))/LOOK);
+    else if (tt >= e.t0 && tt <= e.t1) op = .9;
+    else if (tt > e.t1 && tt < e.t1+.8) op = .9*(1-(tt-e.t1)/.8);
+    if (showAll) op = Math.max(op, .28);
+    if (selected) op = selected===o.id ? Math.max(op,.55) : 0;
+    o.mat.opacity = op; o.tube.visible = o.cone.visible = op > .01;
+    o.svg.style.opacity = op;
+    const showDot = op > .25 && tt < e.t0;
+    o.dot.visible = showDot;
+    if (showDot){ const u = (now/1600)%1; o.dot.position.copy(o.c3.getPointAt(u)).setY(.06); o.dot.material.opacity = op*(1-u*.4); }
+  }
+
+  // нарушения
+  const inside = IDS.filter(id => inZone(S[id].pos));
+  const msgs = [];
+  if (tt < 0 && inside.length) msgs.push(`Фальстарт: ${inside.join(', ')} зашёл до сигнала «Тон». Штраф 5 баллов (незначительный) или 20 (значительный).`);
+  if (inside.length > 1) msgs.push(`В скакалках двое (${inside.join(' и ')}): следующий зашёл раньше, чем вышел прыгающий. Правило смены нарушено.`);
+  for (const id of IDS) if (S[id].ev && S[id].ev.flag==='wrong') msgs.push(`${id} обходит не с той стороны — схема перемещения нарушена (не сохраняя схему — 0 баллов).`);
+  const bad = msgs.length > 0;
+  zoneMat.color.set(bad && inside.length ? css('--danger') : (isDark()? 0x5aa5ff : 0x0d5db8));
+  zoneMat.opacity = bad && inside.length ? .25 + .1*Math.sin(now/120) : .10;
+  miniZone.setAttribute('fill', bad && inside.length ? css('--danger') : 'currentColor');
+  miniZone.setAttribute('opacity', bad && inside.length ? .35 : .06);
+  if (bad){ lastWarn = msgs[0]; warnUntil = now + 1600; }
+  const w = $('warn');
+  if (now < warnUntil){ $('warn-text').textContent = lastWarn; w.classList.add('show'); } else w.classList.remove('show');
+
+  // мини-схема
+  for (const id of IDS){
+    const g = mini.querySelector('#m-'+id), p = S[id].pos;
+    g.setAttribute('transform', `translate(${p[0].toFixed(3)},${(-p[1]).toFixed(3)}) rotate(${(-S[id].face*180/Math.PI).toFixed(1)})`);
+    g.querySelector('text').setAttribute('transform', `rotate(${(S[id].face*180/Math.PI).toFixed(1)})`);
+    g.style.opacity = selected && selected!==id ? .3 : 1;
+  }
+}
+
+/* ============ HUD ============ */
+let lastHud = '';
+function updateHUD(){
+  $('timer').textContent = fmt(Math.min(t,180));
+  const j = currentJumper(t);
+  const nxt = CUES.find(c => c.t > t + 1e-3);
+  const hudKey = [j, nxt && nxt.t, Math.floor(t*4)].join('|');
+  headEl.style.left = pct(t)+'%';
+  $('play-ico').innerHTML = playing ? '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+  if (hudKey === lastHud) return; lastHud = hudKey;
+  $('hud-jumper').innerHTML = j ? `${dotHTML(j,true)} ${SEGS.findIndex(s=>s.id===j)+1} из 4` : (t >= 180 ? 'Финиш' : 'Подготовка');
+  $('hud-next').textContent = nxt ? `«${nxt.tone ? 'Тон' : nxt.say}» через ${Math.ceil(nxt.t - t)} с` : '—';
+  $('run-jumper').innerHTML = j ? `${dotHTML(j)} ${j}` : (t>=180?'Финиш':'—');
+  const seg = SEGS.find(s => t >= s.a && t < s.b);
+  $('run-left').textContent = seg ? (seg.b===180 ? `${Math.ceil(180-t)} с до финиша` : `${Math.ceil(seg.b - t)} с`) : (t<0 ? `старт через ${Math.ceil(-t)} с` : '—');
+  for (const id of IDS){
+    const s = S[id];
+    $('role-'+id).textContent = s.moving ? s.ev.label : (s.role==='jump' && (t<=0||t>=180) ? (t>=180?'Финишировал':'В скакалках') : ROLE_TXT[s.role]);
+    // к кому лицом
+    let best = null, bc = .82;
+    const fx = Math.cos(s.face), fy = Math.sin(s.face);
+    for (const o of IDS) if (o!==id){
+      const dx = S[o].pos[0]-s.pos[0], dy = S[o].pos[1]-s.pos[1], d = Math.hypot(dx,dy);
+      if (d < .2) continue; const c = (dx*fx+dy*fy)/d; if (c > bc){ bc = c; best = o; }
+    }
+    $('face-'+id).textContent = best ? 'лицом к '+best : '';
+  }
+}
+
+/* ============ Цикл ============ */
+const stage = $('stage');
+function resize(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.05, (now-last)/1000); last = now;
+  if (playing){
+    const sp = speed * (mode==='steps' ? .75 : 1);
+    let nt = t + dt*sp;
+    if (stepTarget!==null && nt >= stepTarget){ nt = stepTarget; playing = false; stepTarget = null; }
+    if (nt >= T_MAX){ nt = T_MAX; playing = false; }
+    for (const c of CUES) if (c.t > t && c.t <= nt) fireCue(c);
+    t = nt;
+  }
+  updateWorld(t, now);
+
+  if (camMode==='pov'){
+    const j = currentJumper(t) || 'C', a = ATH[j];
+    const eye = a.headPos.clone().addScaledVector(a.fwd,.12).addScaledVector(UP,.04);
+    camera.position.lerp(eye, .35);
+    const look = eye.clone().addScaledVector(a.fwd,3).addScaledVector(UP,-.35);
+    controls.target.lerp(look, .35); camera.lookAt(controls.target);
+  } else if (tween){
+    tween.k = Math.min(1, tween.k + dt/0.9); const k = ease(tween.k);
+    camera.position.lerpVectors(tween.fp, tween.tp, k);
+    controls.target.lerpVectors(tween.ft, tween.tt, k);
+    camera.lookAt(controls.target);
+    if (tween.k >= 1){ tween = null; controls.enabled = true; }
+  } else controls.update();
+
+  renderer.render(scene, camera);
+  updateHUD();
+  requestAnimationFrame(frame);
+}
+
+buildSchedule(); buildPaths(); applyTheme(); setMode('steps');
+stepIdx = 0; t = -1.2; renderStep();
+setCam('hero'); tween = null; camera.position.set(6.4,5.2,7.2).sub(V(0,.6,0)).multiplyScalar(fitFactor()).add(V(0,.6,0)); controls.enabled = true;
+requestAnimationFrame(frame);
+const ld = $('loading'); ld.style.opacity = 0; setTimeout(()=>ld.remove(), 450);
+</script>
+</body>
+</html>

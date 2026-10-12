@@ -12,6 +12,7 @@ const config = [
       "src/app/(payload)/**",
       "src/payload-types.ts",
       "src/migrations/**",
+      "public/tools/**",
     ],
   },
 ];

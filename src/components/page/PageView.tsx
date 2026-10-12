@@ -76,7 +76,8 @@ export async function PageView({ kind, page: given, fallback, banner, builtin, d
     );
   } else if (root && side.length > 0 && (side.length > 1 || side[0].href !== node?.href)) {
     body = (
-      <SectionShell title={root.label} items={side.map((i) => ({ ...i, active: i.href === active }))}>
+      // Страница внутри пункта (например, схема внутри «Пособий») подсвечивает свой пункт
+      <SectionShell title={root.label} items={side.map((i) => ({ ...i, active: i.href === active || active.startsWith(`${i.href}/`) }))}>
         {content}
       </SectionShell>
     );

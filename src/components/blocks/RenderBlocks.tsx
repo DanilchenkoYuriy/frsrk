@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { getDocuments, getMunicipalities, getPeople, populated, type DocumentDoc, type Media, type Person, type Video } from "@/lib/cms";
+import { SCHEMES } from "@/lib/constants";
 import { visibleLinks } from "@/lib/links";
 import type { SiteTree } from "@/lib/tree";
 import { DocumentRow } from "@/components/documents/DocumentRow";
@@ -200,6 +201,20 @@ function VideoView({ block }: { block: BlockOf<"video"> }) {
   );
 }
 
+function SchemeView({ block }: { block: BlockOf<"scheme"> }) {
+  const scheme = SCHEMES.find((x) => x.value === block.scheme);
+  if (!scheme) return null;
+  return (
+    <section className="scheme">
+      {block.title ? <h2 className="h3">{block.title}</h2> : null}
+      <iframe src={scheme.src} title={scheme.label} loading="lazy" allow="fullscreen" />
+      <a href={scheme.src} className="btn btn--red" target="_blank" rel="noopener">
+        Открыть схему на весь экран
+      </a>
+    </section>
+  );
+}
+
 function TabsView({ block, tree }: { block: BlockOf<"tabs">; tree: SiteTree }) {
   const tabs = (block.tabs ?? []).filter((t) => !t.hidden && (t.content ?? []).some((b) => !isHidden(b)));
   if (!tabs.length) return null;
@@ -229,6 +244,8 @@ function BlockView({ block, tree, builtin }: { block: AnyBlock; tree: SiteTree; 
       return <PeopleView block={block} />;
     case "video":
       return <VideoView block={block} />;
+    case "scheme":
+      return <SchemeView block={block} />;
     case "tabs":
       return <TabsView block={block} tree={tree} />;
     case "events":

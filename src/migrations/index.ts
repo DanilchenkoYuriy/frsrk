@@ -13,6 +13,8 @@ import * as migration_20261011_140000_max_link_privacy from './20261011_140000_m
 import * as migration_20261011_143144_documents_in_list from './20261011_143144_documents_in_list';
 import * as migration_20261011_150000_remove_moscow from './20261011_150000_remove_moscow';
 import * as migration_20261011_160000_history_text from './20261011_160000_history_text';
+import * as migration_20261012_210117_scheme_block from './20261012_210117_scheme_block';
+import * as migration_20261012_220000_posobiya_dd_relay from './20261012_220000_posobiya_dd_relay';
 
 export const migrations = [
   {
@@ -88,6 +90,16 @@ export const migrations = [
   {
     up: migration_20261011_160000_history_text.up,
     down: migration_20261011_160000_history_text.down,
-    name: '20261011_160000_history_text'
+    name: '20261011_160000_history_text',
+  },
+  {
+    up: migration_20261012_210117_scheme_block.up,
+    down: migration_20261012_210117_scheme_block.down,
+    name: '20261012_210117_scheme_block',
+  },
+  {
+    up: migration_20261012_220000_posobiya_dd_relay.up,
+    down: migration_20261012_220000_posobiya_dd_relay.down,
+    name: '20261012_220000_posobiya_dd_relay',
   },
 ];

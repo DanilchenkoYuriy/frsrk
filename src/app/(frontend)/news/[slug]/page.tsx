@@ -6,6 +6,8 @@ import { PageHead } from "@/components/ui/PageHead";
 import { SLOGANS } from "@/config/slogans";
 import { Picture } from "@/components/ui/Picture";
 import { RichText } from "@/components/ui/RichText";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { absoluteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -27,12 +29,27 @@ export default async function NewsItemPage({ params }: Props) {
   if (!item) notFound();
   const gallery = (item.gallery ?? []).map((g) => populated<Media>(g.image)).filter((m): m is Media => Boolean(m));
 
+  const cover = populated<Media>(item.cover);
   return (
     <>
+      <JsonLd
+        data={{
+          "@type": "NewsArticle",
+          headline: item.title,
+          description: item.excerpt,
+          datePublished: item.publishedAt,
+          dateModified: item.updatedAt,
+          image: cover?.url ? [cover.url] : undefined,
+          mainEntityOfPage: absoluteUrl(`/news/${item.slug}`),
+          inLanguage: "ru",
+          publisher: { "@id": absoluteUrl("/#organization") },
+          author: { "@id": absoluteUrl("/#organization") },
+        }}
+      />
       <PageHead banner="news" slogan={SLOGANS.news} title={item.title} lead={formatDate(item.publishedAt)} crumbs={[{ label: "Новости", href: "/news" }, { label: item.title }]} />
       <div className="page">
         <div className="container" style={{ display: "grid", gap: 40 }}>
-          {populated<Media>(item.cover) ? (
+          {cover ? (
             <div style={{ maxWidth: 900 }}>
               <Picture media={item.cover} sizes="(min-width: 960px) 900px, 100vw" priority style={{ borderRadius: 14, width: "100%", height: "auto" }} />
             </div>

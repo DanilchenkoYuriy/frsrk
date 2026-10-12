@@ -191,8 +191,6 @@ export interface Media {
   alt: string;
   caption?: string | null;
   credit?: string | null;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -254,8 +252,6 @@ export interface Document {
    * Снимите, если документ нужен только в мероприятии (регламент, протокол). Он будет на странице мероприятия, но не в списке документов. «Показывать на сайте» при этом должно быть включено.
    */
   inList?: boolean | null;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -280,8 +276,6 @@ export interface AudioTrack {
   durationLabel?: string | null;
   order?: number | null;
   published?: boolean | null;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -312,8 +306,6 @@ export interface Video {
    * Снимите, если видео нужно только для первого экрана главной (блок «Первый экран» в «Страницы сайта → Главная»).
    */
   inGallery?: boolean | null;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1128,7 +1120,8 @@ export interface Page {
             items?:
               | {
                   icon?:
-                    ('scroll' | 'book' | 'medal' | 'music' | 'cap' | 'shield' | 'pin' | 'flag' | 'calendar') | null;
+                    | ('scroll' | 'book' | 'medal' | 'music' | 'cap' | 'shield' | 'pin' | 'flag' | 'calendar' | 'cube')
+                    | null;
                   title: string;
                   text?: string | null;
                   link?: {
@@ -1174,6 +1167,17 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'tiles';
+          }
+        | {
+            title?: string | null;
+            scheme: 'dd-relay';
+            /**
+             * Блок останется в админке, но посетители его не увидят.
+             */
+            hidden?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'scheme';
           }
         | {
             /**
@@ -1548,8 +1552,6 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1610,8 +1612,6 @@ export interface DocumentsSelect<T extends boolean = true> {
   order?: T;
   published?: T;
   inList?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1633,8 +1633,6 @@ export interface AudioTracksSelect<T extends boolean = true> {
   durationLabel?: T;
   order?: T;
   published?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1659,8 +1657,6 @@ export interface VideosSelect<T extends boolean = true> {
   description?: T;
   published?: T;
   inGallery?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -2136,6 +2132,15 @@ export interface PagesSelect<T extends boolean = true> {
                         };
                     id?: T;
                   };
+              hidden?: T;
+              id?: T;
+              blockName?: T;
+            };
+        scheme?:
+          | T
+          | {
+              title?: T;
+              scheme?: T;
               hidden?: T;
               id?: T;
               blockName?: T;

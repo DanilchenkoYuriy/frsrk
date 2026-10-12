@@ -1990,6 +1990,22 @@ ol {
   height: 40px;
 }
 
+/* Блок «Интерактивная схема»: 3D-схемы из public/tools */
+.scheme {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.scheme iframe {
+  display: block;
+  width: 100%;
+  height: clamp(560px, 82vh, 860px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--blue-50);
+}
+
 /* ───────── Текстовые страницы ───────── */
 
 .banner {

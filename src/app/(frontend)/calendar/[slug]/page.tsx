@@ -10,6 +10,8 @@ import { SLOGANS } from "@/config/slogans";
 import { RichText } from "@/components/ui/RichText";
 import { ICONS } from "@/components/ui/Icons";
 import { DocumentRow } from "@/components/documents/DocumentRow";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { absoluteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,8 +39,23 @@ export default async function EventPage({ params }: Props) {
   const { rows: jumpRows, total: jumpTotal } = jumpStatsOf(event.jumpStats);
   const regOpen = Boolean(event.registrationUrl) && status !== "finished" && (!event.registrationDeadline || today <= event.registrationDeadline.slice(0, 10));
 
+  const place = [event.venue, city].filter(Boolean).join(", ");
   return (
     <>
+      <JsonLd
+        data={{
+          "@type": "SportsEvent",
+          name: event.title,
+          startDate: event.dateFrom.slice(0, 10),
+          endDate: (event.dateTo ?? event.dateFrom).slice(0, 10),
+          url: absoluteUrl(`/calendar/${event.slug}`),
+          eventStatus: "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+          sport: "Роуп скиппинг (спортивная скакалка)",
+          location: place ? { "@type": "Place", name: place, address: place } : undefined,
+          organizer: { "@id": absoluteUrl("/#organization") },
+        }}
+      />
       <PageHead banner="calendar" slogan={SLOGANS.event} title={event.title} lead={formatRange(event.dateFrom, event.dateTo)} crumbs={[{ label: "Календарь", href: "/calendar" }, { label: event.title }]} />
       <div className="page">
         <div className="container layout-2">

@@ -57,6 +57,9 @@ export const DISCIPLINES = [
   { value: "team", label: "Командные соревнования" },
 ] as const;
 
+/** Интерактивные схемы для блока «Интерактивная схема». Сами схемы лежат в public/tools. */
+export const SCHEMES = [{ value: "dd-relay", label: "Прыжки через 2 скакалки 4 человека (эстафета)", src: "/tools/dd-relay/index.html" }] as const;
+
 export const PEOPLE_GROUPS = [
   { value: "leadership", label: "Руководство" },
   { value: "coach", label: "Тренеры" },
