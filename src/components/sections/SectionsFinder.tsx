@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CrimeaMap } from "@/components/sections/CrimeaMap";
-import { SEVASTOPOL_NOTE } from "@/lib/constants";
+import { SEVASTOPOL_NOTE, VK_DIALOG } from "@/lib/constants";
 
 export interface SectionView {
   id: number;
@@ -174,7 +173,7 @@ export function SectionsFinder({ municipalities, sections, initialCity }: Props)
                     ) : null}
                   </div>
                 ) : (
-                  <p className="note">Представитель федерации в этом муниципальном образовании пока не назначен. Если хотите им стать, <Link href="/contacts?topic=join-club">напишите нам</Link>.</p>
+                  <p className="note">Представитель федерации в этом муниципальном образовании пока не назначен. Если хотите им стать, <a href={`${VK_DIALOG}?ref=open_section`} target="_blank" rel="noopener noreferrer">напишите нам</a>.</p>
                 )
               ) : visible.length ? (
                 <ul style={{ display: "grid", gap: 12 }}>
@@ -185,7 +184,7 @@ export function SectionsFinder({ municipalities, sections, initialCity }: Props)
               ) : (
                 <p className="note">
                   {current ? `В муниципальном образовании «${current.name}» секций пока нет. ` : "По вашему запросу секций не найдено. "}
-                  Хотите открыть секцию? <Link href="/contacts?topic=join-club">Напишите в федерацию</Link>, мы поможем.
+                  Хотите открыть секцию? <a href={`${VK_DIALOG}?ref=open_section`} target="_blank" rel="noopener noreferrer">Напишите в федерацию</a>, мы поможем.
                 </p>
               )}
             </div>

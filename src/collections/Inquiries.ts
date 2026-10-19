@@ -12,7 +12,7 @@ export const Inquiries: CollectionConfig = {
     description: "Сообщения, которые посетители отправили через форму на странице «Контакты». Содержат персональные данные: не выгружайте и не пересылайте их без необходимости.",
   },
   defaultSort: "-createdAt",
-  // Создаются только серверным обработчиком формы (/api/inquiries); через открытый REST создать нельзя.
+  // Создаются только серверным обработчиком формы (/api/inquiries, удалён 19.10.2026); новых обращений нет, через открытый REST создать нельзя.
   access: { read: isStaff, create: nobody, update: isStaff, delete: isStaff },
   fields: [
     { name: "name", type: "text", label: "Имя", required: true },

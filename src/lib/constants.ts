@@ -77,6 +77,9 @@ export const MUNICIPALITY_KINDS = [
 export const SEVASTOPOL_NOTE =
   "Севастополь — субъект Российской Федерации, город федерального значения. Он не входит в состав Республики Крым и показан на карте для удобства поиска.";
 
+/** Диалог с сообществом ВК. Метка ref подсказывает боту, откуда пришёл человек. */
+export const VK_DIALOG = "https://vk.me/rope_skipping_crimea";
+
 export const INQUIRY_TOPICS = [
   { value: "general", label: "Общий вопрос" },
   { value: "join-club", label: "Открыть секцию или клуб" },

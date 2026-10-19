@@ -2427,7 +2427,7 @@ ol {
   font-weight: 600;
 }
 
-/* ───────── Форма ───────── */
+/* ───────── Поля ввода ───────── */
 
 .field {
   display: grid;
@@ -2440,8 +2440,7 @@ ol {
 }
 
 .input,
-.select,
-.textarea {
+.select {
   width: 100%;
   min-height: 48px;
   padding: 10px 14px;
@@ -2452,61 +2451,10 @@ ol {
   font: inherit;
 }
 
-.textarea {
-  min-height: 140px;
-  resize: vertical;
-}
-
 .input:focus-visible,
-.select:focus-visible,
-.textarea:focus-visible {
+.select:focus-visible {
   outline: 2px solid var(--blue-600);
   outline-offset: 1px;
-}
-
-.form {
-  display: grid;
-  gap: 16px;
-  max-width: 640px;
-}
-
-.form__check {
-  display: flex;
-  align-items: start;
-  gap: 12px;
-  font-size: 0.93rem;
-}
-
-.form__check input {
-  width: 22px;
-  height: 22px;
-  margin-top: 2px;
-  flex: none;
-  accent-color: var(--blue-700);
-}
-
-.form__status {
-  padding: 14px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.form__status--ok {
-  background: #dcf5e8;
-  color: var(--ok);
-}
-
-.form__status--error {
-  background: #fde8eb;
-  color: var(--red-700);
-}
-
-.hp {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
 }
 
 /* ───────── Контакты на главной ───────── */
