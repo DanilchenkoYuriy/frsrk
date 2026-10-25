@@ -9,9 +9,16 @@ export const generateMetadata = () => pageMetadata("leadership", { title: "Ру�
 export default async function LeadershipPage() {
   const [people, municipalities] = await Promise.all([getPeople(), getMunicipalities()]);
   const leaders = people.filter((p) => p.group === "leadership");
-  const reps = municipalities
-    .map((m) => ({ city: m.name, person: populated<Person>(m.representative) }))
-    .filter((r): r is { city: string; person: Person } => Boolean(r.person));
+  // Сначала представители, выбранные у муниципальных образований (с названием города или района),
+  // затем все остальные из группы «Представители в муниципалитетах», ещё не привязанные к образованию.
+  const linked = municipalities
+    .map((m) => ({ key: `m${m.id}`, city: m.name as string | null, person: populated<Person>(m.representative) }))
+    .filter((r): r is { key: string; city: string; person: Person } => Boolean(r.person));
+  const linkedIds = new Set(linked.map((r) => r.person.id));
+  const reps = [
+    ...linked,
+    ...people.filter((p) => p.group === "representative" && !linkedIds.has(p.id)).map((p) => ({ key: `p${p.id}`, city: null, person: p })),
+  ];
 
   return (
     <PageView
@@ -41,8 +48,8 @@ export default async function LeadershipPage() {
               Представители в муниципальных образованиях
             </h2>
             <ul className="people">
-              {reps.map(({ city, person }) => (
-                <PersonCard key={city} p={{ ...person, position: `${city}. ${person.position}` }} />
+              {reps.map(({ key, city, person }) => (
+                <PersonCard key={key} p={city ? { ...person, position: `${city}. ${person.position}` } : person} />
               ))}
             </ul>
           </section>

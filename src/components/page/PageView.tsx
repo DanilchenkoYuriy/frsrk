@@ -32,13 +32,15 @@ interface Props {
   documents?: { active: string; q?: string };
   /** Последняя хлебная крошка, если она отличается от заголовка (например, «Правила вида спорта») */
   crumb?: string;
+  /** Промежуточные крошки для страницы без записи в админке (например, город внутри «Найти секцию») */
+  trail?: { label: string; href: string }[];
 }
 
 /**
  * Любая страница сайта: полоса заголовка, меню раздела слева (если страница в разделе) и блоки из админки.
  * Главная выводит блоки во всю ширину, без полосы заголовка.
  */
-export async function PageView({ kind, page: given, fallback, banner, builtin, documents, crumb }: Props) {
+export async function PageView({ kind, page: given, fallback, banner, builtin, documents, crumb, trail = [] }: Props) {
   const [tree, loaded] = await Promise.all([getSiteTree(), given ? Promise.resolve(given) : kind ? getPage(kind) : Promise.resolve(null)]);
   const page = loaded;
   // Пока страницы нет в админке, показываем основное содержимое как раньше
@@ -58,6 +60,7 @@ export async function PageView({ kind, page: given, fallback, banner, builtin, d
 
   const crumbs = [
     ...ancestors.map((a) => ({ label: a.label, href: (tree.landing(a) ?? a).href ?? undefined })),
+    ...trail,
     { label: crumb ?? title },
   ];
 
