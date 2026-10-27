@@ -1,0 +1,15 @@
+# Какой домен на какой сайт. Сертификаты HTTPS Caddy получает сам.
+
+frsrk.ru {
+	encode zstd gzip
+	reverse_proxy frsrk:3000
+}
+
+www.frsrk.ru {
+	redir https://frsrk.ru{uri} permanent
+}
+
+# Следующий сайт добавляется так же:
+# double-dutch.ru {
+# 	reverse_proxy имя-сервиса:порт
+# }

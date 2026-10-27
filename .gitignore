@@ -21,3 +21,7 @@ next-env.d.ts
 
 # исходные файлы для первичной загрузки на сервер (документы, музыка, фото): в GitHub не попадают
 /seed-assets/
+
+# Пароли сервера FirstVDS
+deploy/.env
+deploy/*.env

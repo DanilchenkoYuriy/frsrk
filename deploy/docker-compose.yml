@@ -1,0 +1,54 @@
+# Сервер FirstVDS: все сайты на одном VPS.
+# Caddy принимает посетителей и сам выпускает HTTPS-сертификаты,
+# PostgreSQL хранит базы всех сайтов (у каждого сайта своя база).
+# Запуск на сервере: cd /opt/sites/frsrk/deploy && docker compose up -d --build
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frsrk
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Впишите POSTGRES_PASSWORD в deploy/.env}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    # Порт наружу не открыт: база доступна только сайтам на этом сервере.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+
+  frsrk:
+    build: ..
+    restart: unless-stopped
+    env_file: frsrk.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # Сюда позже добавятся другие сайты, например double-dutch.ru.
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pg_data:
